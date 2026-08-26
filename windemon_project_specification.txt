@@ -1,0 +1,15 @@
+# WinDemon App Specification & Modular Structure
+
+## Project Architecture (React Native / Expo)
+- `/src/context/`: State management for Theme, Language, and App Data (Tasks/Streaks).
+- `/src/screens/`: Modular screens for Home, Routine, Recall, Reminders, Games, and Caregiver.
+- `/src/components/`: Reusable UI like the SOSButton.
+
+## Feature Modules
+1. **Offline-First State**: Persisted via AsyncStorage.
+2. **NER Language Support**: Dictionary-based translations for 14 languages.
+3. **High-Contrast Visibility**: Specialized themes for elderly users.
+4. **SOS System**: Real-time location fetching via `expo-location`.
+5. **Cognitive Recall**: Interactive sequencing game to boost daily scores.
+6. **Reminders**: Local notifications via `expo-notifications`.
+7. **Caregiver Sync**: Real-time progress monitoring from the shared state.

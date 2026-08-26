@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WinDemon - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f9f9f9",
+                        "primary-container": "#002b5c",
+                        "primary-fixed-dim": "#aac7ff",
+                        "on-surface": "#1b1b1b",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed": "#ffe16d",
+                        "outline": "#747780",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-tertiary-fixed": "#410003",
+                        "on-surface-variant": "#43474f",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-variant": "#e2e2e2",
+                        "surface-container-high": "#e8e8e8",
+                        "tertiary-container": "#600007",
+                        "surface": "#f9f9f9",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#aac7ff",
+                        "on-primary-fixed": "#001b3e",
+                        "surface-dim": "#dadada",
+                        "on-secondary-fixed": "#221b00",
+                        "inverse-on-surface": "#f1f1f1",
+                        "secondary": "#705d00",
+                        "on-primary-container": "#7594cb",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#930010",
+                        "on-background": "#1b1b1b",
+                        "on-secondary-fixed-variant": "#544600",
+                        "tertiary": "#390002",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "on-primary-fixed-variant": "#264779",
+                        "surface-tint": "#3f5f92",
+                        "outline-variant": "#c4c6d0",
+                        "on-secondary-container": "#6e5c00",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#ff5a53",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9f9",
+                        "primary": "#001736",
+                        "secondary-container": "#fcd400",
+                        "inverse-surface": "#303030",
+                        "surface-container": "#eeeeee",
+                        "secondary-fixed-dim": "#e9c400",
+                        "tertiary-fixed-dim": "#ffb3ac"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "touch-target-min": "48px",
+                        "margin-page": "20px",
+                        "grid-gap": "16px",
+                        "gutter": "16px",
+                        "stack-gap": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "label-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "button-text": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-xl": ["20px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "body-md": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "800" }],
+                        "headline-md": ["24px", { "lineHeight": "30px", "fontWeight": "700" }],
+                        "button-text": ["22px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "28px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen flex flex-col pt-[64px] pb-[80px]">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-page h-[64px] bg-surface border-b-2 border-outline-variant">
+<div class="flex items-center gap-4">
+<button aria-label="Open menu" class="w-[48px] h-[48px] flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-transform duration-100 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<img alt="WinDemon Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCszWv2dM1GEM5T1WpVMwGrVCwb-rPuqEFwPU1p7h2VDzYfte7la7dIquursGLZevRhwtlxwZvhwImokL2c_1GoAzw6GzxIvnO4c5g0I3py2-Rh1efp4KBzRnyQEbHyPsh0yVyaDhj2CXzVualbD1Hs3dTIpFD7FAIRDljpIv9q-WdVC440eGgDzL1qfeznwsz_BYdnAgILwOEwJBW18LBA9K3L2ZWy75yvHkNsAgyi_c9VhTAxK4O3bA"/>
+<h1 class="font-headline-md text-headline-md-mobile text-primary font-bold flex items-center gap-2">WinDemon <button aria-label="Read text" class="text-surface-tint"><span class="material-symbols-outlined text-[20px]">volume_up</span></button></h1>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Toggle Font Size" class="w-[48px] h-[48px] flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-transform duration-100 active:scale-95 font-bold text-lg">
+A<span class="text-sm">±</span>
+</button>
+<button aria-label="Toggle Theme" class="w-[48px] h-[48px] flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-transform duration-100 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
+</button>
+<button aria-label="Change Language" class="w-[48px] h-[48px] flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high rounded-full transition-transform duration-100 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">language</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col p-margin-page gap-stack-gap overflow-y-auto w-full max-w-4xl mx-auto">
+<!-- Accessibility Controls (Extra top spacing) -->
+<div class="pt-2 flex justify-between items-center">
+<h2 class="font-headline-md text-primary font-bold flex items-center gap-2">Activities <button aria-label="Read text" class="text-surface-tint"><span class="material-symbols-outlined text-[20px]">volume_up</span></button></h2>
+</div>
+<!-- Modern Vertical/Staggered Layout -->
+<section class="flex flex-col gap-4 w-full">
+<!-- Daily Routine -->
+<button aria-label="Daily Routine" class="flex items-center gap-4 bg-primary-fixed border border-outline-variant rounded-2xl p-4 active:scale-95 transition-transform duration-100 shadow-sm text-left">
+<div class="w-[64px] h-[64px] rounded-full bg-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl text-on-primary" style="font-variation-settings: 'FILL' 1;">checklist</span>
+</div>
+<div class="flex-grow">
+<span class="font-label-xl text-on-primary-fixed font-bold block mb-1 flex items-center gap-2">Daily Routine <span class="material-symbols-outlined text-[18px] text-surface-tint">volume_up</span></span>
+<span class="font-body-md text-on-surface-variant">3 tasks remaining</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Pill Reminders -->
+<button aria-label="Pill Reminders" class="flex items-center gap-4 bg-[#fff3e0] border border-outline-variant rounded-2xl p-4 active:scale-95 transition-transform duration-100 shadow-sm text-left">
+<div class="w-[64px] h-[64px] rounded-full bg-[#ef6c00] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1;">medication</span>
+</div>
+<div class="flex-grow">
+<span class="font-label-xl text-[#e65100] font-bold block mb-1 flex items-center gap-2">Pill Reminders <span class="material-symbols-outlined text-[18px] text-surface-tint">volume_up</span></span>
+<span class="font-body-md text-on-surface-variant">Next: 2:00 PM</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<!-- Brain Games -->
+<button aria-label="Brain Games" class="flex items-center gap-4 bg-[#f3e5f5] border border-outline-variant rounded-2xl p-4 active:scale-95 transition-transform duration-100 shadow-sm text-left">
+<div class="w-[64px] h-[64px] rounded-full bg-[#6a1b9a] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<div class="flex-grow">
+<span class="font-label-xl text-[#4a148c] font-bold block mb-1 flex items-center gap-2">Brain Games <span class="material-symbols-outlined text-[18px] text-surface-tint">volume_up</span></span>
+<span class="font-body-md text-on-surface-variant">Daily puzzle ready</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</section>
+<!-- Home Explorer Section -->
+<section class="mt-4">
+<h2 class="font-headline-md text-primary font-bold flex items-center gap-2 mb-4">Home Explorer <button aria-label="Read text" class="text-surface-tint"><span class="material-symbols-outlined text-[20px]">volume_up</span></button></h2>
+<div class="flex overflow-x-auto gap-4 pb-4 snap-x">
+<!-- Explorer Item 1 -->
+<button class="snap-start shrink-0 w-[200px] flex flex-col bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm active:scale-95 transition-transform">
+<div class="h-[120px] bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl text-on-surface-variant">medication_liquid</span>
+</div>
+<div class="p-3 text-center flex items-center justify-center gap-2">
+<span class="font-label-xl font-bold text-on-surface">Medicine Box</span>
+<span class="material-symbols-outlined text-[18px] text-surface-tint">volume_up</span>
+</div>
+</button>
+<!-- Explorer Item 2 -->
+<button class="snap-start shrink-0 w-[200px] flex flex-col bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm active:scale-95 transition-transform">
+<div class="h-[120px] bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl text-on-surface-variant">water_drop</span>
+</div>
+<div class="p-3 text-center flex items-center justify-center gap-2">
+<span class="font-label-xl font-bold text-on-surface">Water Pitcher</span>
+<span class="material-symbols-outlined text-[18px] text-surface-tint">volume_up</span>
+</div>
+</button>
+</div>
+</section>
+<!-- SOS Button Container -->
+<div class="mt-auto pt-4 pb-4">
+<button aria-label="SOS Get Help" class="w-full bg-[#d32f2f] hover:bg-[#b71c1c] text-white rounded-xl py-6 flex items-center justify-center gap-3 active:scale-95 transition-transform duration-100 shadow-md min-h-[80px]">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">emergency</span>
+<span class="font-headline-md text-headline-md-mobile font-bold tracking-wide">SOS - GET HELP</span>
+<span class="material-symbols-outlined text-[24px]">volume_up</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface border-t-2 border-outline-variant">
+<a aria-label="Home" class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-6 py-2 active:translate-y-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-xl text-sm font-bold">Home</span>
+</a>
+<a aria-label="Tasks" class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container px-4 py-2 active:translate-y-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">checklist</span>
+<span class="font-label-xl text-sm font-bold">Tasks</span>
+</a>
+<a aria-label="Care" class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container px-4 py-2 active:translate-y-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">volunteer_activism</span>
+<span class="font-label-xl text-sm font-bold">Care</span>
+</a>
+<a aria-label="Settings" class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container px-4 py-2 active:translate-y-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-xl text-sm font-bold">Settings</span>
+</a>
+</nav>
+</body></html>

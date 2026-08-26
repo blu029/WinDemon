@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en" class="light font-scale-md">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WinDemon - Dementia Care Platform</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols Outlined -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              purple: '#470085',
+              purpleLight: '#5f259f',
+              purpleBg: '#eedbff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Custom App Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-100 text-slate-900 dark:bg-[#101014] dark:text-slate-100 min-h-screen">
+
+  <!-- Toast Notification Root -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Mobile App Viewport Container (PhonePe Style Shell) -->
+  <div class="app-viewport pb-24">
+
+    <!-- Top PhonePe Header -->
+    <header class="top-header shadow-md">
+      <div class="flex items-center justify-between gap-2">
+        <!-- User Badge & Location Indicator -->
+        <div class="flex items-center gap-2.5">
+          <div id="topAvatarBtn" onclick="openProfileDetailModal()" class="w-10 h-10 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white font-black text-sm shrink-0 shadow-inner cursor-pointer active:scale-95 transition-transform overflow-hidden" title="View Patient Profile">
+            <img id="topAvatarImg" class="hidden w-full h-full object-cover" alt="Avatar" />
+            <span id="topAvatarInitials">WD</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1 cursor-pointer">
+              <span class="font-bold text-sm text-white flex items-center gap-1">
+                <span data-i18n="appName">WinDemon Care</span>
+                <span class="material-symbols-outlined text-[16px]">expand_more</span>
+              </span>
+            </div>
+            <p id="topLocationText" class="text-[11px] text-purple-200 truncate max-w-[160px]">Greenview Lane, Guwahati</p>
+          </div>
+        </div>
+
+        <!-- Top Right Accessibility Controls (2 Small Toggles + Language + SOS) -->
+        <div class="flex items-center gap-1.5">
+          <!-- 1. Font Size Adjuster Toggle (A-, A, A+) -->
+          <button onclick="cycleFontScale()" 
+                  id="fontSizeToggleBtn"
+                  class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center font-bold text-xs transition-transform" 
+                  title="Adjust Font Size" 
+                  aria-label="Adjust Font Size">
+            <span id="fontSizeBtnLabel">A</span>
+          </button>
+
+          <!-- 2. Dark / Light Theme Switcher Toggle -->
+          <button onclick="toggleTheme()" 
+                  id="themeToggleBtn"
+                  class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition-transform" 
+                  title="Toggle Dark/Light Mode" 
+                  aria-label="Toggle Dark/Light Mode">
+            <span id="themeToggleIcon" class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+
+          <!-- Language Selector Button -->
+          <button onclick="openLanguageModal()" 
+                  class="w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center transition-transform" 
+                  title="Choose Language (14 Languages)" 
+                  aria-label="Change Language">
+            <span class="material-symbols-outlined text-[18px]">translate</span>
+          </button>
+
+          <!-- SOS Help Mini Trigger -->
+          <button onclick="triggerSOS()" 
+                  class="px-2.5 py-1 rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-[11px] flex items-center gap-1 shadow transition-transform ml-1">
+            <span class="material-symbols-outlined text-[14px]">sos</span>
+            <span data-i18n="sos">SOS</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Screens Container -->
+    <main class="flex-1 p-4 flex flex-col gap-4">
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 1: PATIENT HOME DASHBOARD                         -->
+      <!-- ======================================================== -->
+      <section id="screen-home" class="app-screen flex flex-col gap-4">
+        
+        <!-- PhonePe Quick Action 4-Grid -->
+        <div class="grid grid-cols-4 gap-2.5">
+          <div onclick="switchTab('tasks')" class="quick-action-tile">
+            <div class="tile-icon-circle bg-purple-100 text-purple-900 dark:bg-purple-900/50 dark:text-purple-200">
+              <span class="material-symbols-outlined text-2xl fill-icon">checklist</span>
+            </div>
+            <span data-i18n="routine" class="text-xs font-bold text-[var(--text-main)]">Routine</span>
+          </div>
+
+          <div onclick="switchTab('tasks')" class="quick-action-tile">
+            <div class="tile-icon-circle bg-amber-100 text-amber-900 dark:bg-amber-900/50 dark:text-amber-200">
+              <span class="material-symbols-outlined text-2xl fill-icon">medication</span>
+            </div>
+            <span data-i18n="meds" class="text-xs font-bold text-[var(--text-main)]">Meds</span>
+          </div>
+
+          <div onclick="switchTab('explorer')" class="quick-action-tile">
+            <div class="tile-icon-circle bg-teal-100 text-teal-900 dark:bg-teal-900/50 dark:text-teal-200">
+              <span class="material-symbols-outlined text-2xl fill-icon">travel_explore</span>
+            </div>
+            <span data-i18n="explorer" class="text-xs font-bold text-[var(--text-main)]">Explorer</span>
+          </div>
+
+          <div onclick="switchTab('games')" class="quick-action-tile">
+            <div class="tile-icon-circle bg-blue-100 text-blue-900 dark:bg-blue-900/50 dark:text-blue-200">
+              <span class="material-symbols-outlined text-2xl fill-icon">psychology</span>
+            </div>
+            <span data-i18n="games" class="text-xs font-bold text-[var(--text-main)]">Games</span>
+          </div>
+        </div>
+
+        <!-- Next Scheduled Reminder Card -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-bold text-base text-[var(--text-main)] flex items-center gap-1.5">
+              <span data-i18n="nextReminder">Next Reminder</span>
+              <button onclick="speakTemplate('ttsRoutineIntro')" class="text-[var(--text-muted)] hover:text-[var(--primary-purple)]" aria-label="Listen">
+                <span class="material-symbols-outlined text-[18px]">volume_up</span>
+              </button>
+            </h3>
+            <span id="homePendingTasksCount" class="text-xs font-medium text-[var(--text-muted)]">3 tasks remaining today</span>
+          </div>
+          <div id="homeNextTaskContainer"></div>
+        </div>
+
+        <!-- Home Explorer Quick Preview (Where is My Stuff?) -->
+        <div class="pp-card flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[var(--secondary-teal)] fill-icon">meeting_room</span>
+              <h3 data-i18n="whereIsMyStuff" class="font-bold text-base text-[var(--text-main)]">Where is My Stuff?</h3>
+            </div>
+            <button onclick="switchTab('explorer')" class="text-xs font-bold text-[var(--primary-purple)] flex items-center gap-0.5">
+              <span data-i18n="viewAll">View All</span> <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            </button>
+          </div>
+          
+          <div id="homeExplorerQuickPreview" class="grid grid-cols-2 gap-2.5"></div>
+        </div>
+
+        <!-- Quick Emergency Assistance Full-Width Action -->
+        <button onclick="triggerSOS()" 
+                class="w-full py-4 px-6 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-98 text-white font-black text-lg flex items-center justify-center gap-3 shadow-lg shadow-red-600/30 transition-all">
+          <span class="material-symbols-outlined text-3xl">emergency_home</span>
+          <span data-i18n="sosHelp">EMERGENCY SOS HELP</span>
+        </button>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 2: PATIENT ROUTINE & TASKS                        -->
+      <!-- ======================================================== -->
+      <section id="screen-tasks" class="app-screen hidden flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+              <span data-i18n="dailyRoutine">Daily Routine</span>
+              <button onclick="speakTemplate('ttsRoutineIntro')" class="text-[var(--text-muted)] hover:text-[var(--primary-purple)]" aria-label="Listen">
+                <span class="material-symbols-outlined text-[20px]">volume_up</span>
+              </button>
+            </h2>
+            <p data-i18n="routineSubtitle" class="text-xs text-[var(--text-muted)]">Check off items as you complete them.</p>
+          </div>
+          <button onclick="openAddTaskModal()" 
+                  class="px-3.5 py-2 rounded-xl bg-[var(--primary-purple)] text-white text-xs font-bold flex items-center gap-1 active:scale-95 shadow transition-transform">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            <span data-i18n="addTask">Add Task</span>
+          </button>
+        </div>
+
+        <!-- Routine Completion Bar -->
+        <div id="taskProgressStats" class="pp-card p-3"></div>
+
+        <!-- Task List (Positive Green Done State, NO STRIKETHROUGHS) -->
+        <div id="patientTaskList" class="flex flex-col gap-2.5"></div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 3: HOME EXPLORER (Visual Item Locator + Upload)   -->
+      <!-- ======================================================== -->
+      <section id="screen-explorer" class="app-screen hidden flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+              <span data-i18n="homeExplorer">Home Explorer</span>
+              <button onclick="speakTemplate('ttsExplorerIntro')" class="text-[var(--text-muted)] hover:text-[var(--primary-purple)]" aria-label="Listen">
+                <span class="material-symbols-outlined text-[20px]">volume_up</span>
+              </button>
+            </h2>
+            <p data-i18n="explorerSubtitle" class="text-xs text-[var(--text-muted)]">Photos and exact locations of household items.</p>
+          </div>
+          <button onclick="openAddExplorerModal()" 
+                  class="px-3.5 py-2 rounded-xl bg-[var(--primary-purple)] text-white text-xs font-bold flex items-center gap-1 active:scale-95 shadow transition-transform">
+            <span class="material-symbols-outlined text-[18px]">add_photo_alternate</span>
+            <span data-i18n="addItem">Add Item</span>
+          </button>
+        </div>
+
+        <!-- Explorer Items Grid -->
+        <div id="explorerItemsList" class="flex flex-col gap-4"></div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 4: COGNITIVE GAMES PORTAL                         -->
+      <!-- ======================================================== -->
+      <section id="screen-games" class="app-screen hidden flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+              <span data-i18n="brainGames">Brain Games</span>
+              <button onclick="speakTemplate('ttsGamesIntro')" class="text-[var(--text-muted)] hover:text-[var(--primary-purple)]" aria-label="Listen">
+                <span class="material-symbols-outlined text-[20px]">volume_up</span>
+              </button>
+            </h2>
+            <p data-i18n="selectExerciseSubtitle" class="text-xs text-[var(--text-muted)]">Select an exercise to strengthen memory, attention, and executive function.</p>
+          </div>
+        </div>
+
+        <!-- Offline AI/ML Adaptive Difficulty Engine Panel -->
+        <div class="pp-card bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 dark:from-indigo-950/20 dark:to-purple-950/20 dark:border-indigo-900/50 flex flex-col gap-3 p-4">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400 font-bold">psychology_alt</span>
+              <h3 data-i18n="aiDifficultyAdaptor" class="font-extrabold text-sm text-indigo-950 dark:text-indigo-200">AI/ML Difficulty Adaptor (Offline)</h3>
+            </div>
+            <span data-i18n="activeModel" class="px-2 py-0.5 rounded bg-indigo-600 text-white text-[10px] font-black uppercase">Active Model</span>
+          </div>
+          <div class="text-center text-xs">
+            <div class="p-2 bg-white/70 dark:bg-black/30 rounded-lg border border-indigo-100">
+              <span data-i18n="difficultyProfile" class="text-[10px] text-[var(--text-muted)] font-bold">Difficulty Profile</span>
+              <div id="aiAdaptedLevel" class="font-black text-indigo-600 dark:text-indigo-400 text-sm mt-0.5">Medium (Auto)</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between border-t border-indigo-200/30 pt-2 text-xs">
+            <span data-i18n="aiAdaptiveMode" class="text-[var(--text-muted)] font-semibold">AI Adaptive Mode</span>
+            <div class="flex items-center gap-1.5">
+              <button id="aiToggleBtn" data-i18n="autoAdaptive" onclick="toggleAIAdaptiveMode()" class="px-3 py-1 rounded-full bg-indigo-600 text-white font-extrabold active:scale-95 transition-transform">Auto-Adaptive</button>
+              <button id="manualDiffBtn" onclick="cycleManualDifficulty()" class="hidden px-3 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-[var(--text-main)] font-extrabold active:scale-95 transition-transform">Easy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 Game List -->
+        <div class="flex flex-col gap-6">
+          <!-- Game 1: Memory Match (Featured) -->
+          <section class="bg-orange-50 dark:bg-orange-950/10 rounded-[24px] p-6 shadow-[0px_8px_24px_rgba(26,28,78,0.08)] relative overflow-hidden flex flex-col md:flex-row gap-6 items-center border border-orange-200 dark:border-orange-900/40">
+            <div class="w-full md:w-1/2 aspect-video rounded-xl overflow-hidden shadow-md relative">
+              <img alt="Memory Match Game" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyA3n0LhGQps-rRVvG4zSB4W7_fQ-Erl8sDfSLEUXj65a9zyIG1wXS34SBpWdD2YmuoPR4jUTI9WUXLwol4LYPBhY5gODZpljY0tJytR8iVGkahl_RuKUE8qi5nKzR5QA7QP4tbqXSJiszPi9beoal1LXQkj1WWhDXU9GCYfEbf1m9nTZJDO-hwOFBN4GUefU3kabeVlRLk_l9BWN5zuAodTBPal3vaDQMCDTCr4uAgtWbv9VJYnlI3g"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-4">
+                <div class="flex items-center gap-2 text-white">
+                  <span class="material-symbols-outlined text-[20px]">psychology</span>
+                  <span class="text-xs font-bold">Improves Memory</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-full md:w-1/2 flex flex-col gap-3">
+              <div class="inline-flex items-center px-3 py-1 bg-orange-500 text-white rounded-full text-xs font-extrabold self-start shadow-sm">Featured</div>
+              <div class="flex items-center justify-between">
+                <h3 data-i18n="memoryMatchTitle" class="font-extrabold text-lg text-orange-950 dark:text-orange-200">Memory Match</h3>
+                <button onclick="speakText('Memory Match. Pair nostalgic objects to boost recall.', state.language)" class="text-orange-600 hover:bg-orange-200 dark:hover:bg-orange-900/30 rounded-full p-2 transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                </button>
+              </div>
+              <p data-i18n="memoryMatchDesc" class="text-xs text-orange-900 dark:text-orange-300">Pair nostalgic objects to boost recall.</p>
+              <button onclick="launchSubGame('memory-match')" class="h-[60px] bg-orange-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-orange-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Game Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Game 2: Word Search -->
+            <article class="bg-teal-50 dark:bg-teal-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-teal-100 dark:border-teal-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Word Search" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAieTQ-zoLa71Txin1-PxKEfPpTwIVNeb2ne1S3QsEUyMnBDqKIcLmNv9SjRheZ4ymqDlsEJ49jSvkivI77CqLKig0S6Qyrdryf8uUVWAb6Ckj6LE2q2PC79i5yVmmPSSruuirvY3kWCdcmudGy84A-JoEJX6QleoP_K9hnKmStrZ-VJunGyDDo_mFMCVob5vTJRHnPENno7SGZno-tzGu67SDg3M-tAiGo4Z_O2fqF_EGEdKZPr7P4kg"/>
+                <div class="absolute top-3 left-3 bg-teal-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">translate</span>
+                  <span>Vocabulary</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="wordSearchTitle" class="text-base font-bold text-teal-900 dark:text-teal-200">Word Search</h3>
+                  <button onclick="speakText('Word Search. Find daily items in a large-print grid.', state.language)" class="text-teal-600 hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="wordSearchDesc" class="text-xs text-teal-800 dark:text-teal-300 line-clamp-2">Find daily items in a large-print grid.</p>
+              </div>
+              <button onclick="launchSubGame('word-search')" class="h-[60px] bg-teal-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-teal-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 3: Tangram Puzzles -->
+            <article class="bg-purple-50 dark:bg-purple-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-purple-100 dark:border-purple-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Tangram Puzzles" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk81h_nbCGHuDFcGlmxfhW1BKjYoLs6XfL9qpv0cP4ZTBYfRjnBlWfP3Xk3BDhKDXziHq4yoWmGjZN9VOR5MiPLDCFgDlmNRr3p8TiE5MExr5fQbPQ7K3s4Ro4RtO8fCwso26bJSKIKTigKewF4w0ouPWhHMPD7oPWggJ5-7E_BX7vkRrQt_z06etN5OVM5f7TRqefMgaNpv-dT4RBR9av4lEazMn3fcqaqJDxLwf8FWymgw-jPwD-TQ"/>
+                <div class="absolute top-3 left-3 bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">extension</span>
+                  <span>Spatial Reasoning</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="tangramTitle" class="text-base font-bold text-purple-900 dark:text-purple-200">Tangram Puzzles</h3>
+                  <button onclick="speakText('Tangram Puzzles. Fit geometric shapes to build spatial awareness.', state.language)" class="text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="tangramDesc" class="text-xs text-purple-800 dark:text-purple-300 line-clamp-2">Fit geometric shapes to build spatial awareness.</p>
+              </div>
+              <button onclick="launchSubGame('tangram')" class="h-[60px] bg-purple-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-purple-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 4: Stroop Test -->
+            <article class="bg-red-50 dark:bg-red-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-red-100 dark:border-red-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Stroop Test" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2k2Gv8bgX5DE94PeNDrVss0mTlzQvVnoHmIw1ZKR5ejK01rtKsMrrGg5kKI-HZUMuKz95EbqiJlDEpzi4pMaxvZnDPT6zGh3J9qQuChOSV_C8OUTmsQXX48ZrWnmEASm_ZAJXXf6ESEIB0RmR04kaDXfD3-SoGJhWB8IoyVGobGhgiQqvN-6MicTkDEN2IPrTeIZzD187g76QI0CzMBATdjjEDg_G9wcJ0uG6ZV5ZvM6XF7a8h9wDig"/>
+                <div class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">visibility</span>
+                  <span>Attention</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="stroopTitle" class="text-base font-bold text-red-900 dark:text-red-200">Stroop Test</h3>
+                  <button onclick="speakText('Stroop Test. Identify the correct text colors.', state.language)" class="text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="stroopDesc" class="text-xs text-red-800 dark:text-red-300 line-clamp-2">Identify colors despite conflicting text to build focus.</p>
+              </div>
+              <button onclick="launchSubGame('stroop-test')" class="h-[60px] bg-red-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-red-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 5: Sudoku -->
+            <article class="bg-blue-50 dark:bg-blue-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-blue-100 dark:border-blue-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Sudoku" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQ_t7Fgm6ZeOWyn1lfizSlWtXd2D2HJUU1XXIz4v8KnnMRKHeiTUno4BX3a2wedP8-9r9-IR1ST-B_V0FwdKvqRJlq6bkzBs1AQbVC1EQ4sDQkSD6MGHx7TzUCBVx6yeueiKHyFjbNWvjJ8Oretw8Uh26kMFFneE51HboAorMRDyhG5LXLM_3z-PvrDsykwSWlFivXY8yzpV4zxRgfShS7pyX0410NMWnnHN8Z_Cg0_m7vfKHkMlEamg"/>
+                <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">grid_on</span>
+                  <span>Problem Solving</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="sudokuTitle" class="text-base font-bold text-blue-900 dark:text-blue-200">Sudoku</h3>
+                  <button onclick="speakText('Sudoku. Fill grids with simplified logic.', state.language)" class="text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="sudokuDesc" class="text-xs text-blue-800 dark:text-blue-300 line-clamp-2">Fill 4x4 grids with simplified logic puzzles.</p>
+              </div>
+              <button onclick="launchSubGame('sudoku')" class="h-[60px] bg-blue-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-blue-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 6: Hidden Objects -->
+            <article class="bg-amber-50 dark:bg-amber-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-amber-100 dark:border-amber-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Hidden Objects" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABdjO_uJ1UBOB-Bj_7pkj3L-tPQXmAwg3QTWpDYJIUsFJZXAAGI450qKPzn2DX7GsjNELzVHKyorEEwnYrY4KI-glinArcPOTafKDU-GntZ9Jz-U5PUMXH38DII2luKtJ64fwuyNbWiDaRPURVykkbTVT0zZZs20emOHrqj5orjDiw4aMesSdVvPpKyswCIsNue9BnGNzJLWuMOqIugzaM_EX8V-5xRJjska69VhBv0GxKNnbMR1bczA"/>
+                <div class="absolute top-3 left-3 bg-amber-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">search</span>
+                  <span>Visual Focus</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="hiddenObjectsTitle" class="text-base font-bold text-amber-900 dark:text-amber-200">Hidden Objects</h3>
+                  <button onclick="speakText('Hidden Objects. Find items in a nostalgic kitchen scene.', state.language)" class="text-amber-600 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="hiddenObjectsDesc" class="text-xs text-amber-800 dark:text-amber-300 line-clamp-2">Find items in a nostalgic kitchen scene.</p>
+              </div>
+              <button onclick="launchSubGame('hidden-objects')" class="h-[60px] bg-amber-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-amber-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 7: Grocery Math -->
+            <article class="bg-green-50 dark:bg-green-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-green-100 dark:border-green-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Grocery Math" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWYnmg5YSWsiA9jz_ywmzJso1q22WeSnROWK_THX8YH5pt5KsVRhe72FbnU_HRdSXClFZvwe016yMtAyEwSnFJQhjlvPPNshFpfg-zS7p6n48teFZiVc19rpNh2kqol3ENCVQ7IKHq8SgeLVR2CT9wb1j78x0UfGyx8VmkFBQePJ8a7_X_MKkF182Bl-OAnPTK3IDNhQs8PZcrCKEvXZHQM8DISaRypMrtaxEzNlsTese6X7jrJ-5bgA"/>
+                <div class="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">calculate</span>
+                  <span>Functional Math</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="groceryMathTitle" class="text-base font-bold text-green-900 dark:text-green-200">Grocery Math</h3>
+                  <button onclick="speakText('Grocery Math. Calculate totals in real-world shopping.', state.language)" class="text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="groceryMathDesc" class="text-xs text-green-800 dark:text-green-300 line-clamp-2">Calculate totals in real-world shopping scenarios.</p>
+              </div>
+              <button onclick="launchSubGame('grocery-math')" class="h-[60px] bg-green-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-green-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 8: Shape Matching -->
+            <article class="bg-cyan-50 dark:bg-cyan-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-cyan-100 dark:border-cyan-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Shape Matching" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFrw3pQ_12a35wGP2qK0Bu-AXfcJVtv7XdYIH1OaE5PuR9uzEoL0b9na5-azX4glompp4ymr9Lparj0KG0-0uQW-jvGjOdqe-xp3UI6GWuVy1zxWTocuoPYGQQSgPCL7-xTA61EBLAbOCEzhuc-vQZSqVF6JMcAT8XKhw7mmIQChPr3NCvVJ_QbJrHD9sfMXHu-MOqzK9JcGs1MxLsnmWxeyie1xXxTqbV-xL6J8PYgigvFwOkglltCA"/>
+                <div class="absolute top-3 left-3 bg-cyan-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">category</span>
+                  <span>Recognition</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="shapeMatchingTitle" class="text-base font-bold text-cyan-900 dark:text-cyan-200">Shape Matching</h3>
+                  <button onclick="speakText('Shape Matching. Match three-dimensional blocks to their shadows.', state.language)" class="text-cyan-600 hover:bg-cyan-100 dark:hover:bg-cyan-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="shapeMatchingDesc" class="text-xs text-cyan-800 dark:text-cyan-300 line-clamp-2">Match 3D blocks to their shadows.</p>
+              </div>
+              <button onclick="launchSubGame('shape-matching')" class="h-[60px] bg-cyan-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-cyan-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 9: Wide-Track Maze -->
+            <article class="bg-indigo-50 dark:bg-indigo-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-indigo-100 dark:border-indigo-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Wide-Track Maze" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9WKgr872i1C88iJDU6Zx2b8HvNI377rbUb99hy5uZZDCQjy8-Sb6X6sGbMGy3rXgF4yYcrlESiBEoZJ0YoNLr6IuEFlTvlIfVVmoZQjKaaaJOGmJblvZW2OwOVoCZmt-Ka4CO6dzaarN2xhfKVp1146PlgJagOpYZJ0ZxrQh7jmNrw4RFr-gLnxCsu7L90ABDiVjUVs8IiftAQObx_51-vqr7QfypBn_i_yI3nIEi22ycURFKQ0AR2g"/>
+                <div class="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">route</span>
+                  <span>Motor Planning</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="wideMazeTitle" class="text-base font-bold text-indigo-900 dark:text-indigo-200">Wide-Track Maze</h3>
+                  <button onclick="speakText('Wide-Track Maze. Navigate a thick path designed for steady hands.', state.language)" class="text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="wideMazeDesc" class="text-xs text-indigo-800 dark:text-indigo-300 line-clamp-2">Navigate a thick green path designed for steady hands.</p>
+              </div>
+              <button onclick="launchSubGame('wide-maze')" class="h-[60px] bg-indigo-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+
+            <!-- Game 10: Sequence Recall -->
+            <article class="bg-violet-50 dark:bg-violet-950/10 rounded-[24px] p-5 shadow-[0px_4px_12px_rgba(26,28,78,0.05)] border border-violet-100 dark:border-violet-900/40 flex flex-col gap-4">
+              <div class="w-full aspect-[4/3] rounded-xl overflow-hidden relative">
+                <img alt="Sequence Recall" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA37QC5K3GYwCyq7icFgDIB9uAZoeXmNoOOSX1b3QXo0HA8JF6uRtm4vWd0pfQHnXi9onz1tYwUR5eZUeWwzNWyz00LB2sOD8_SDJS1sWAUgWb4_GEQ8fU7v2jVjrrb1e71c8GIF-ezK5FA16Rsp0ImpvARnXn2R7dYbfVPx-svBbNkz-UllNaMKUq5_aE6m_8i6IdaACUeI_UT98NBrb0E-qj9Qi3zi2injUsiY5gQSWEzb2CsBODYAA"/>
+                <div class="absolute top-3 left-3 bg-violet-600 text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                  <span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
+                  <span>Executive Function</span>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2 flex-grow">
+                <div class="flex items-center justify-between">
+                  <h3 data-i18n="simonTitle" class="text-base font-bold text-violet-900 dark:text-violet-200">Sequence Recall</h3>
+                  <button onclick="speakText('Sequence Recall. Remember and repeat daily sequences.', state.language)" class="text-violet-600 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors rounded-full p-2">
+                    <span class="material-symbols-outlined text-[20px]">volume_up</span>
+                  </button>
+                </div>
+                <p data-i18n="simonDesc" class="text-xs text-violet-800 dark:text-violet-300 line-clamp-2">Order daily activities chronologically.</p>
+              </div>
+              <button onclick="launchSubGame('sequence-recall')" class="h-[60px] bg-violet-600 text-white font-bold text-base rounded-xl w-full flex items-center justify-center gap-2 hover:bg-violet-700 active:scale-[0.98] transition-all shadow-md">
+                <span class="material-symbols-outlined text-[20px]">play_arrow</span> <span data-i18n="playGame">Play Game</span>
+              </button>
+            </article>
+          </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="pp-card flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-amber-500 fill-icon">leaderboard</span>
+              <h3 data-i18n="localLeaderboard" class="font-bold text-base text-[var(--text-main)]">Local Leaderboard</h3>
+            </div>
+          </div>
+          <p data-i18n="communityEncourage" class="text-xs text-[var(--text-muted)]">Encouraging participation across the local senior community.</p>
+          <div id="anonLeaderboardList" class="flex flex-col gap-2 pt-1"></div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 1: SEQUENCE RECALL (SIMON)               -->
+      <!-- ======================================================== -->
+      <section id="screen-game-sequence-recall" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="simonRoundCounter" class="px-3 py-1 rounded-full bg-[var(--primary-purple-bg)] text-[var(--primary-purple)] font-black text-xs">
+            Round 1
+          </span>
+        </div>
+        
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)] flex justify-center items-center gap-1">
+            <span>Sequence Recall</span>
+            <span id="simonDifficultyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[var(--text-muted)] font-extrabold uppercase">Medium</span>
+          </h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Watch the pattern and repeat it exactly!</p>
+        </div>
+
+        <div class="pp-card flex flex-col items-center gap-4 py-6">
+          <p id="simonStatusText" class="text-sm font-bold text-[var(--text-main)] text-center min-h-[24px]">
+            Press Start to begin sequence recall
+          </p>
+
+          <div class="simon-grid w-full">
+            <button id="simonPad1" onclick="handlePadPress(1)" class="simon-btn simon-btn-1 active:scale-95" aria-label="Blue Pad">
+              <span class="material-symbols-outlined text-3xl">sentiment_satisfied</span>
+            </button>
+            <button id="simonPad2" onclick="handlePadPress(2)" class="simon-btn simon-btn-2 active:scale-95" aria-label="Green Pad">
+              <span class="material-symbols-outlined text-3xl">spa</span>
+            </button>
+            <button id="simonPad3" onclick="handlePadPress(3)" class="simon-btn simon-btn-3 active:scale-95" aria-label="Red Pad">
+              <span class="material-symbols-outlined text-3xl">favorite</span>
+            </button>
+            <button id="simonPad4" onclick="handlePadPress(4)" class="simon-btn simon-btn-4 active:scale-95" aria-label="Orange Pad">
+              <span class="material-symbols-outlined text-3xl">light_mode</span>
+            </button>
+          </div>
+
+          <div class="flex gap-3">
+            <button id="simonStartBtn" onclick="startSequenceGame()" class="px-6 py-2.5 rounded-xl bg-[var(--primary-purple)] text-white font-bold text-sm shadow active:scale-95 transition-transform flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[20px]">play_arrow</span>
+              <span data-i18n="startExercise">Start Exercise</span>
+            </button>
+            <button id="simonRestartBtn" onclick="startSequenceGame()" class="hidden px-4 py-2.5 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] font-bold text-sm active:scale-95 transition-transform flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[18px]">replay</span>
+              <span data-i18n="restart">Restart</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 2: MEMORY MATCH                          -->
+      <!-- ======================================================== -->
+      <section id="screen-game-memory-match" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="memoryScoreCounter" class="px-3 py-1 rounded-full bg-orange-100 text-orange-600 font-black text-xs">
+            Pairs: 0/4
+          </span>
+        </div>
+
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)] flex justify-center items-center gap-1">
+            <span>Memory Match</span>
+            <span id="memoryDifficultyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[var(--text-muted)] font-extrabold uppercase">Medium</span>
+          </h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Flip cards to pair realistic nostalgic items!</p>
+        </div>
+
+        <div class="pp-card flex flex-col items-center gap-4 py-5 text-center">
+          <p id="memoryStatusText" class="text-sm font-bold text-[var(--text-main)]">
+            Click Start to flip cards and pair objects
+          </p>
+
+          <!-- Dynamic grid container -->
+          <div id="memoryGrid" class="grid grid-cols-4 gap-2.5 max-w-[320px] w-full"></div>
+
+          <button id="memoryStartBtn" onclick="startMemoryMatchGame()" class="px-6 py-2.5 rounded-xl bg-orange-600 text-white font-bold text-sm shadow active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 3: STROOP TEST                           -->
+      <!-- ======================================================== -->
+      <section id="screen-game-stroop-test" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="stroopScoreCounter" class="px-3 py-1 rounded-full bg-red-100 text-red-600 font-black text-xs">
+            Score: 0
+          </span>
+        </div>
+
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)] flex justify-center items-center gap-1">
+            <span>Stroop Test Focus</span>
+            <span id="stroopDifficultyBadge" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[var(--text-muted)] font-extrabold uppercase">Medium</span>
+          </h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Select the color of the text, ignoring the word's text meaning!</p>
+        </div>
+
+        <div class="pp-card flex flex-col items-center gap-4 py-5 text-center min-h-[300px] justify-center">
+          <!-- Timer bar -->
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden max-w-[280px]">
+            <div id="stroopTimerBar" class="bg-red-600 h-full w-full transition-all duration-100 ease-linear"></div>
+          </div>
+
+          <div id="stroopWordDisplay" class="text-4xl font-black py-4 transition-all" style="color: blue;">
+            RED
+          </div>
+
+          <div id="stroopOptionsContainer" class="flex flex-col gap-2.5 w-full max-w-[240px]"></div>
+
+          <button id="stroopStartBtn" onclick="startStroopGame()" class="px-6 py-2.5 rounded-xl bg-red-600 text-white font-bold text-sm shadow active:scale-95 transition-transform flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- 8. MOCK GAME SIMULATOR MODAL (For other 7 games) -->
+      <div id="mockGameModal" class="modal-backdrop hidden z-[100]">
+        <div class="modal-sheet flex flex-col gap-4 text-center">
+          <div class="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 mx-auto flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">psychology_alt</span>
+          </div>
+          <div>
+            <h3 id="mockGameTitle" class="text-lg font-black text-[var(--text-main)]">Word Search Simulator</h3>
+            <p class="text-xs text-[var(--text-muted)] mt-1">Loading offline cognitive adaptive values...</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-black/30 border border-[var(--border-color)] text-left text-xs">
+            <div class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mb-1">AI Engine Parameters Adjusted</div>
+            <div id="mockGameParams" class="font-mono text-[var(--text-main)] space-y-0.5">
+              - Grid Size: 8x8 (Large Text)<br/>
+              - Focus Items: 4 (Nostalgic nouns)<br/>
+              - Adaptation rate: +0.25 (Positive feedback)
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="dismissMockGame()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm active:scale-95 shadow">
+              Activate Preview
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 4: WORD SEARCH                           -->
+      <!-- ======================================================== -->
+      <section id="screen-game-word-search" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="wsFoundCounter" class="px-3 py-1 rounded-full bg-teal-100 text-teal-700 font-black text-xs">Found: 0/5</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Word Search</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Find all the hidden words in the grid!</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-4 py-4">
+          <div id="wsWordList" class="flex flex-wrap gap-2 justify-center"></div>
+          <div id="wsGrid" class="grid gap-0.5" style="grid-template-columns: repeat(8, 1fr); touch-action: none; user-select: none;"></div>
+          <div id="wsStatus" class="text-sm font-bold text-[var(--text-main)] text-center min-h-[20px]"></div>
+          <button id="wsStartBtn" onclick="startWordSearch()" class="px-6 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 5: TANGRAM PUZZLES                       -->
+      <!-- ======================================================== -->
+      <section id="screen-game-tangram" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="tangramScore" class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 font-black text-xs">Score: 0</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Tangram Puzzles</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Which shapes combine to make this outline?</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-5 py-5">
+          <div id="tangramRound" class="text-xs font-bold text-[var(--text-muted)]">Round 1 / 8</div>
+          <div id="tangramTarget" class="w-32 h-32 flex items-center justify-center"></div>
+          <p class="text-sm font-semibold text-[var(--text-main)]">Select the correct shapes:</p>
+          <div id="tangramOptions" class="grid grid-cols-3 gap-3 w-full max-w-xs"></div>
+          <div id="tangramFeedback" class="text-sm font-bold min-h-[20px]"></div>
+          <button id="tangramStartBtn" onclick="startTangram()" class="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 6: SUDOKU (4x4)                          -->
+      <!-- ======================================================== -->
+      <section id="screen-game-sudoku" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="sudokuStatus" class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-black text-xs">Sudoku</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Sudoku</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Fill the 4x4 grid — each row, column, and box needs 1-4.</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-4 py-5">
+          <div id="sudokuGrid" class="grid gap-1" style="grid-template-columns: repeat(4, 1fr); max-width: 240px; width: 100%;"></div>
+          <div id="sudokuNumberPad" class="hidden flex gap-3 mt-2"></div>
+          <div id="sudokuFeedback" class="text-sm font-bold min-h-[20px] text-center"></div>
+          <div class="flex gap-3">
+            <button id="sudokuStartBtn" onclick="startSudoku()" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[20px]">play_arrow</span> New Puzzle
+            </button>
+            <button onclick="checkSudoku()" class="px-4 py-2.5 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] font-bold text-sm active:scale-95">
+              Check
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 7: HIDDEN OBJECTS                        -->
+      <!-- ======================================================== -->
+      <section id="screen-game-hidden-objects" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="hoFoundCounter" class="px-3 py-1 rounded-full bg-amber-100 text-amber-700 font-black text-xs">Found: 0/6</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Hidden Objects</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Tap each item when you spot it in the scene!</p>
+        </div>
+        <div class="pp-card flex flex-col gap-4 py-4">
+          <div id="hoItemList" class="flex flex-wrap gap-2 justify-center"></div>
+          <div id="hoScene" class="relative w-full rounded-xl overflow-hidden bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800" style="aspect-ratio: 4/3;"></div>
+          <div id="hoFeedback" class="text-sm font-bold text-center min-h-[20px]"></div>
+          <button id="hoStartBtn" onclick="startHiddenObjects()" class="px-6 py-2.5 rounded-xl bg-amber-600 text-white font-bold text-sm shadow active:scale-95 flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 8: GROCERY MATH                          -->
+      <!-- ======================================================== -->
+      <section id="screen-game-grocery-math" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="gmScoreCounter" class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-black text-xs">0 / 8</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Grocery Math</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">What is the total cost of these items?</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-4 py-5">
+          <div id="gmItemDisplay" class="w-full flex flex-col gap-2 min-h-[80px]"></div>
+          <div id="gmQuestion" class="text-base font-extrabold text-[var(--text-main)] text-center"></div>
+          <div id="gmOptions" class="grid grid-cols-2 gap-3 w-full max-w-xs"></div>
+          <div id="gmFeedback" class="text-sm font-bold min-h-[20px] text-center"></div>
+          <button id="gmStartBtn" onclick="startGroceryMath()" class="px-6 py-2.5 rounded-xl bg-green-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 9: SHAPE MATCHING                        -->
+      <!-- ======================================================== -->
+      <section id="screen-game-shape-matching" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <span id="smScoreCounter" class="px-3 py-1 rounded-full bg-cyan-100 text-cyan-700 font-black text-xs">Score: 0/8</span>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Shape Matching</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Which shadow matches the shape on the left?</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-5 py-5">
+          <div id="smRound" class="text-xs font-bold text-[var(--text-muted)]">Round 1 / 8</div>
+          <div class="flex items-center gap-6 w-full justify-center">
+            <div class="flex flex-col items-center gap-1">
+              <span class="text-xs text-[var(--text-muted)] font-semibold">Shape</span>
+              <div id="smShapeDisplay" class="w-20 h-20 flex items-center justify-center"></div>
+            </div>
+            <span class="material-symbols-outlined text-2xl text-[var(--text-muted)]">arrow_forward</span>
+            <div class="flex flex-col items-center gap-1">
+              <span class="text-xs text-[var(--text-muted)] font-semibold">Shadow</span>
+              <div id="smShadowDisplay" class="w-20 h-20 flex items-center justify-center opacity-40"></div>
+            </div>
+          </div>
+          <p class="text-sm font-semibold text-[var(--text-main)]">Pick the matching shadow:</p>
+          <div id="smOptions" class="grid grid-cols-3 gap-3 w-full max-w-xs"></div>
+          <div id="smFeedback" class="text-sm font-bold min-h-[20px]"></div>
+          <button id="smStartBtn" onclick="startShapeMatching()" class="px-6 py-2.5 rounded-xl bg-cyan-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Game
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- GAME SUB-SCREEN 10: WIDE-TRACK MAZE                      -->
+      <!-- ======================================================== -->
+      <section id="screen-game-wide-maze" class="app-screen hidden flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button onclick="exitGame()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[var(--border-color)] text-xs text-[var(--text-main)] font-bold active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back
+            </button>
+            <button onclick="openLanguageModal()" class="flex items-center justify-center w-8 h-8 rounded-xl border border-[var(--border-color)] text-[var(--text-main)] active:scale-95" aria-label="Change Language">
+              <span class="material-symbols-outlined text-[18px]">language</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="mazeDifficultySelect" class="px-2 py-1 text-xs rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] font-bold">
+              <option value="easy">Easy Maze</option>
+              <option value="medium" selected>Medium Maze</option>
+              <option value="hard">Hard Maze</option>
+            </select>
+            <span id="mazeTimer" class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-black text-xs">0s</span>
+          </div>
+        </div>
+        <div class="text-center">
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Wide-Track Maze</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">Use Swipe on maze or the Arrow Buttons to guide the icon to the EXIT!</p>
+        </div>
+        <div class="pp-card flex flex-col items-center gap-4 py-4">
+          <!-- Touch-friendly grid container for maze -->
+          <div id="mazeGrid" class="grid gap-1 bg-slate-200 dark:bg-slate-800 p-2.5 rounded-2xl select-none" style="width: 290px; height: 290px; touch-action: none;"></div>
+          
+          <!-- Direction controller buttons for high accessibility -->
+          <div class="flex flex-col items-center gap-1 mt-2">
+            <button onclick="tryMazeMove(-1, 0)" class="w-12 h-12 rounded-xl bg-indigo-600 text-white font-black shadow flex items-center justify-center active:scale-90" aria-label="Move Up">
+              <span class="material-symbols-outlined text-2xl">arrow_upward</span>
+            </button>
+            <div class="flex gap-4">
+              <button onclick="tryMazeMove(0, -1)" class="w-12 h-12 rounded-xl bg-indigo-600 text-white font-black shadow flex items-center justify-center active:scale-90" aria-label="Move Left">
+                <span class="material-symbols-outlined text-2xl">arrow_back</span>
+              </button>
+              <div class="w-12 h-12"></div>
+              <button onclick="tryMazeMove(0, 1)" class="w-12 h-12 rounded-xl bg-indigo-600 text-white font-black shadow flex items-center justify-center active:scale-90" aria-label="Move Right">
+                <span class="material-symbols-outlined text-2xl">arrow_forward</span>
+              </button>
+            </div>
+            <button onclick="tryMazeMove(1, 0)" class="w-12 h-12 rounded-xl bg-indigo-600 text-white font-black shadow flex items-center justify-center active:scale-90" aria-label="Move Down">
+              <span class="material-symbols-outlined text-2xl">arrow_downward</span>
+            </button>
+          </div>
+
+          <div id="mazeFeedback" class="text-sm font-bold text-center min-h-[20px]"></div>
+          <button id="mazeStartBtn" onclick="startMaze()" class="px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow active:scale-95 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[20px]">play_arrow</span> Start Maze
+          </button>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- SCREEN 5: SETTINGS & PASSWORD PROTECTED CAREGIVER MODE   -->
+      <!-- ======================================================== -->
+      <section id="screen-settings" class="app-screen hidden flex flex-col gap-4">
+        
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-[var(--text-main)] flex items-center gap-2">
+              <span data-i18n="appSettings">App Settings</span>
+              <button onclick="speakTemplate('ttsSettingsIntro')" class="text-[var(--text-muted)] hover:text-[var(--primary-purple)]" aria-label="Listen">
+                <span class="material-symbols-outlined text-[20px]">volume_up</span>
+              </button>
+            </h2>
+            <p data-i18n="settingsSubtitle" class="text-xs text-[var(--text-muted)]">Accessibility, emergency contacts, and caregiver portal.</p>
+          </div>
+        </div>
+
+        <!-- General App Preferences -->
+        <div class="pp-card flex flex-col gap-3">
+          <h3 data-i18n="preferences" class="font-bold text-sm text-[var(--text-main)]">Preferences</h3>
+
+          <div onclick="openLanguageModal()" class="flex items-center justify-between py-2 border-b border-[var(--border-color)] cursor-pointer">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[var(--primary-purple)]">translate</span>
+              <div>
+                <div data-i18n="languageDictionary" class="text-sm font-semibold text-[var(--text-main)]">Language Dictionary</div>
+                <div data-i18n="langSub" class="text-xs text-[var(--text-muted)]">14 Indian & North-Eastern languages</div>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-[var(--text-muted)]">chevron_right</span>
+          </div>
+
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border-color)]">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[var(--primary-purple)]">format_size</span>
+              <div>
+                <div data-i18n="fontSizeScale" class="text-sm font-semibold text-[var(--text-main)]">Font Size Scale</div>
+                <div data-i18n="fontSub" class="text-xs text-[var(--text-muted)]">Large readable typography</div>
+              </div>
+            </div>
+            <button onclick="cycleFontScale()" data-i18n="toggleSize" class="px-3 py-1 rounded-lg bg-[var(--surface-bg)] text-xs font-bold border border-[var(--border-color)]">
+              Toggle Size
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between py-2 border-b border-[var(--border-color)]">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[var(--primary-purple)]">hearing</span>
+              <div>
+                <div class="text-sm font-semibold text-[var(--text-main)]">Voice Feedback</div>
+                <div class="text-xs text-[var(--text-muted)]">Auto-read tasks, game cues and alerts aloud</div>
+              </div>
+            </div>
+            <button id="ttsToggleBtn" onclick="toggleTTS()" class="relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none bg-slate-300 dark:bg-slate-700" aria-label="Toggle Voice Feedback">
+              <span id="ttsToggleThumb" class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"></span>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between py-2">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[var(--primary-purple)]">call</span>
+              <div>
+                <div data-i18n="primaryEmergency" class="text-sm font-semibold text-[var(--text-main)]">Primary Emergency Contact</div>
+                <div class="text-xs text-[var(--text-muted)]">+91 98765 43210 (Dr. A. Sharma)</div>
+              </div>
+            </div>
+            <a href="tel:+919876543210" data-i18n="call" class="px-3 py-1 rounded-lg bg-green-700 text-white text-xs font-bold">
+              Call
+            </a>
+          </div>
+        </div>
+
+        <!-- CAREGIVER PORTAL AUTHENTICATION HEADER -->
+        <div class="pp-card bg-gradient-to-br from-[var(--primary-purple-bg)] to-[var(--card-bg)] border-2 border-[var(--primary-purple)] flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-full bg-[var(--primary-purple)] text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-xl">admin_panel_settings</span>
+              </div>
+              <div>
+                <h3 data-i18n="caregiverManagement" class="font-extrabold text-base text-[var(--text-main)]">Caregiver Management</h3>
+                <div id="caregiverLockStatus" class="text-xs"></div>
+              </div>
+            </div>
+          </div>
+
+          <p data-i18n="caregiverDesc" class="text-xs text-[var(--text-muted)]">
+            Password-protected portal for family and clinical caregivers to manage geofence perimeters, remote alerts, and cognitive health logs.
+          </p>
+
+          <button onclick="handleCaregiverAuthToggle()" 
+                  class="w-full py-2.5 px-4 rounded-xl bg-[var(--primary-purple)] text-white font-bold text-sm flex items-center justify-center gap-2 shadow active:scale-98 transition-transform">
+            <span id="caregiverToggleBtnIcon" class="material-symbols-outlined text-[18px]">key</span>
+            <span id="caregiverToggleBtnText" data-i18n="unlockCaregiver">Unlock Caregiver Portal</span>
+          </button>
+        </div>
+
+        <!-- UNLOCKED CAREGIVER PORTAL VIEWS -->
+        <div id="caregiverPortalView" class="hidden flex flex-col gap-4">
+
+          <!-- 1. Safe Zone Configuration with Interactive Radar -->
+          <div class="pp-card flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--primary-purple)] fill-icon">share_location</span>
+                <h4 data-i18n="safeZonePerimeter" class="font-bold text-base text-[var(--text-main)]">Safe Zone Perimeter</h4>
+              </div>
+              <div id="safeZoneStatusBadge"></div>
+            </div>
+            
+            <p data-i18n="safeZoneDesc" class="text-xs text-[var(--text-muted)]">
+              Set roaming radius around patient residence. Dispatches immediate alerts if patient crosses perimeter.
+            </p>
+
+            <!-- Leaflet Interactive Map -->
+            <div id="safeZoneMap" class="radar-canvas-container z-10 rounded-xl overflow-hidden border border-[var(--border-color)]"></div>
+
+            <!-- Radius Adjustment Slider -->
+            <div class="flex flex-col gap-1.5 pt-1">
+              <div class="flex justify-between text-xs font-bold">
+                <span data-i18n="perimeterRadius">Perimeter Radius</span>
+                <span id="safeZoneRadiusValue" class="text-[var(--primary-purple)] font-extrabold">500m</span>
+              </div>
+              <input type="range" id="safeZoneRadiusSlider" min="100" max="1000" step="50" value="500" 
+                     oninput="handleSafeZoneRadiusChange(event)"
+                     class="w-full accent-[#470085] cursor-pointer">
+              <div class="flex justify-between text-[10px] text-[var(--text-muted)]">
+                <span>100m</span>
+                <span>500m</span>
+                <span>1000m</span>
+              </div>
+            </div>
+
+            <!-- Simulation Controls -->
+            <div class="flex gap-2 pt-2 border-t border-[var(--border-color)]">
+              <button onclick="simulatePatientMove(150)" data-i18n="simulateStepOut" class="flex-1 py-2 px-3 rounded-lg bg-[var(--surface-bg)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-main)] active:scale-95">
+                Simulate Step Out (+150m)
+              </button>
+              <button onclick="simulatePatientMove(-150)" data-i18n="stepIn" class="flex-1 py-2 px-3 rounded-lg bg-[var(--surface-bg)] border border-[var(--border-color)] text-xs font-bold text-[var(--text-main)] active:scale-95">
+                Step In (-150m)
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Remote Reminder Dispatcher -->
+          <div class="pp-card flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--primary-purple)] fill-icon">cell_tower</span>
+                <h4 data-i18n="sendRemoteReminders" class="font-bold text-base text-[var(--text-main)]">Send Remote Reminders</h4>
+              </div>
+              <span data-i18n="liveVoiceSync" class="text-[11px] text-[var(--text-muted)]">Live Voice Sync</span>
+            </div>
+            <p data-i18n="remoteReminderDesc" class="text-xs text-[var(--text-muted)]">Broadcast immediate spoken audio cues to the patient device.</p>
+
+            <div class="grid grid-cols-3 gap-2">
+              <button onclick="sendRemoteReminder('meds')" class="p-3 rounded-xl bg-purple-900 text-white font-bold text-xs flex flex-col items-center gap-1.5 active:scale-95 transition-transform shadow">
+                <span class="material-symbols-outlined text-2xl">medication</span>
+                <span data-i18n="medication">Medicine</span>
+              </button>
+              <button onclick="sendRemoteReminder('water')" class="p-3 rounded-xl bg-teal-800 text-white font-bold text-xs flex flex-col items-center gap-1.5 active:scale-95 transition-transform shadow">
+                <span class="material-symbols-outlined text-2xl">water_drop</span>
+                <span data-i18n="hydration">Hydration</span>
+              </button>
+              <button onclick="sendRemoteReminder('posture')" class="p-3 rounded-xl bg-slate-700 text-white font-bold text-xs flex flex-col items-center gap-1.5 active:scale-95 transition-transform shadow">
+                <span class="material-symbols-outlined text-2xl">self_improvement</span>
+                <span data-i18n="posture">Posture</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. NGO Dementia Activity & Community Panel -->
+          <div class="pp-card flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--secondary-teal)] fill-icon">volunteer_activism</span>
+                <h4 data-i18n="localNgoHub" class="font-bold text-base text-[var(--text-main)]">Local NGO Dementia Hub</h4>
+              </div>
+              <span data-i18n="activeFeed" class="px-2 py-0.5 rounded bg-[var(--secondary-teal-bg)] text-[var(--secondary-teal)] text-[10px] font-extrabold">Active Feed</span>
+            </div>
+            <p data-i18n="ngoHubDesc" class="text-xs text-[var(--text-muted)]">Nearby memory cafes, caregiver respite circles, and NGO health camps.</p>
+
+            <div id="caregiverNGOList" class="flex flex-col gap-2.5 pt-1"></div>
+          </div>
+
+          <!-- 4. Clinical MMSE 12-Month Retention Tracking Chart -->
+          <div id="mmseGraphContainer"></div>
+
+          <!-- 5. Caregiver PIN Settings -->
+          <div class="pp-card flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[var(--primary-purple)] fill-icon">security</span>
+              <h4 class="font-bold text-base text-[var(--text-main)]">Change Caregiver Portal PIN</h4>
+            </div>
+            <p class="text-xs text-[var(--text-muted)]">Set a custom 4-digit PIN for access control. Default is 1234.</p>
+            <div class="flex flex-col gap-2 pt-1">
+              <div class="flex gap-2">
+                <input type="password" id="newCaregiverPin" maxlength="4" placeholder="New PIN (4 digits)"
+                       class="flex-1 px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+                <input type="password" id="confirmCaregiverPin" maxlength="4" placeholder="Confirm PIN"
+                       class="flex-1 px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+              </div>
+              <button onclick="changeCaregiverPin()" class="w-full py-2.5 rounded-lg bg-[var(--primary-purple)] text-white text-xs font-bold active:scale-95 transition-transform">
+                Update Security PIN
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- 6. CAREGIVER ANALYTICS DASHBOARD           -->
+          <!-- ========================================== -->
+          <div class="pp-card flex flex-col gap-4 border-2 border-[var(--primary-purple)]/30 bg-gradient-to-br from-[var(--card-bg)] to-[var(--surface-bg)]">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--primary-purple)] fill-icon text-2xl">analytics</span>
+                <h4 class="font-extrabold text-base text-[var(--text-main)]">Caregiver Analytics Dashboard</h4>
+              </div>
+              <button onclick="refreshAnalyticsDashboard()" class="w-8 h-8 rounded-full bg-[var(--primary-purple-bg)] text-[var(--primary-purple)] flex items-center justify-center active:scale-95" title="Refresh">
+                <span class="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+            <p class="text-xs text-[var(--text-muted)] -mt-2">Real-time patient cognitive performance stats and game behavior analytics.</p>
+
+            <!-- Key Stats Grid -->
+            <div id="analyticsStatsGrid" class="grid grid-cols-2 gap-3 text-center">
+              <!-- Populated dynamically -->
+            </div>
+
+            <!-- Game Performance History Chart (SVG) -->
+            <div class="flex flex-col gap-1.5">
+              <h5 class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--primary-purple)] text-lg">bar_chart</span>
+                Game Score History (Last 10 Sessions)
+              </h5>
+              <div class="w-full bg-[var(--surface-bg)] rounded-xl p-3 border border-[var(--border-color)] h-36 relative overflow-hidden">
+                <svg id="scoreHistoryChart" viewBox="0 0 340 100" class="w-full h-full" preserveAspectRatio="none"></svg>
+              </div>
+            </div>
+
+            <!-- Task Completion Donut -->
+            <div class="flex items-center gap-4">
+              <div class="relative w-20 h-20 shrink-0">
+                <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border-color)" stroke-width="3"/>
+                  <circle id="taskDonutArc" cx="18" cy="18" r="15.9" fill="none" stroke="#5f259f" stroke-width="3"
+                          stroke-dasharray="0 100" stroke-linecap="round" class="transition-all duration-500"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center flex-col">
+                  <span id="taskDonutPct" class="text-base font-black text-[var(--primary-purple)]">0%</span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <h5 class="font-bold text-sm text-[var(--text-main)]">Daily Task Completion</h5>
+                <p class="text-xs text-[var(--text-muted)] mt-0.5" id="taskDonutLabel">0 of 0 tasks completed today</p>
+                <div class="flex gap-2 mt-1.5">
+                  <span class="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                    <span class="w-2 h-2 rounded-full bg-[var(--primary-purple)]"></span> Done
+                  </span>
+                  <span class="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                    <span class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700"></span> Pending
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Heatmap Last 7 Days -->
+            <div class="flex flex-col gap-2">
+              <h5 class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+                <span class="material-symbols-outlined text-[var(--secondary-teal)] text-lg">calendar_month</span>
+                Daily Engagement — Last 7 Days
+              </h5>
+              <div id="weeklyEngagementBars" class="flex items-end gap-1.5 h-16 px-1">
+                <!-- bars rendered dynamically -->
+              </div>
+              <div class="flex justify-between text-[9px] text-[var(--text-muted)] px-1">
+                <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+              </div>
+            </div>
+
+            <!-- Cognitive Risk Level Indicator -->
+            <div class="flex flex-col gap-1.5">
+              <h5 class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-500 text-lg">monitor_heart</span>
+                Cognitive Risk Index
+              </h5>
+              <div class="w-full bg-slate-100 dark:bg-slate-800 h-4 rounded-full overflow-hidden relative">
+                <div id="cogRiskBar" class="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-emerald-400 to-amber-400" style="width:30%"></div>
+                <div id="cogRiskMarker" class="absolute top-0 h-4 w-1 bg-[var(--primary-purple)] rounded transition-all duration-700" style="left:30%"></div>
+              </div>
+              <div class="flex justify-between text-[9px] text-[var(--text-muted)]">
+                <span class="text-emerald-600 font-bold">Stable</span>
+                <span class="text-amber-600 font-bold">Moderate</span>
+                <span class="text-red-600 font-bold">High Risk</span>
+              </div>
+              <p id="cogRiskDescription" class="text-xs text-[var(--text-muted)] bg-[var(--surface-bg)] rounded-lg px-3 py-2 border border-[var(--border-color)] leading-relaxed">
+                Patient shows stable cognitive engagement patterns. Continue current exercise regimen.
+              </p>
+            </div>
+
+            <!-- Latest Game Sessions Table -->
+            <div class="flex flex-col gap-2">
+              <h5 class="font-bold text-sm text-[var(--text-main)] flex items-center gap-2">
+                <span class="material-symbols-outlined text-orange-500 text-lg">sports_esports</span>
+                Recent Game Sessions
+              </h5>
+              <div id="recentGameSessions" class="flex flex-col gap-1.5 text-xs">
+                <!-- Rendered dynamically -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom PhonePe-Style Navigation Bar (Fully Localized!) -->
+    <nav class="bottom-nav">
+      <button onclick="switchTab('home')" class="nav-item active" data-tab="home" aria-label="Home Screen">
+        <span class="material-symbols-outlined text-2xl">home</span>
+        <span data-i18n="home">Home</span>
+      </button>
+      <button onclick="switchTab('tasks')" class="nav-item" data-tab="tasks" aria-label="Daily Routine">
+        <span class="material-symbols-outlined text-2xl">checklist</span>
+        <span data-i18n="routine">Routine</span>
+      </button>
+      <button onclick="switchTab('explorer')" class="nav-item" data-tab="explorer" aria-label="Home Explorer">
+        <span class="material-symbols-outlined text-2xl">travel_explore</span>
+        <span data-i18n="explorer">Explorer</span>
+      </button>
+      <button onclick="switchTab('games')" class="nav-item" data-tab="games" aria-label="Cognitive Games">
+        <span class="material-symbols-outlined text-2xl">psychology</span>
+        <span data-i18n="games">Games</span>
+      </button>
+      <button onclick="switchTab('settings')" class="nav-item" data-tab="settings" aria-label="App Settings">
+        <span class="material-symbols-outlined text-2xl">settings</span>
+        <span data-i18n="settings">Settings</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODALS & DRAWERS                                         -->
+  <!-- ======================================================== -->
+
+  <!-- 1. CAREGIVER PIN AUTHENTICATION MODAL -->
+  <div id="pinAuthModal" class="modal-backdrop hidden">
+    <div class="modal-sheet flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[var(--primary-purple)] fill-icon text-2xl">lock</span>
+          <h3 data-i18n="pinRequired" class="font-extrabold text-lg text-[var(--text-main)]">Caregiver PIN Required</h3>
+        </div>
+        <button onclick="closePinModal()" class="text-[var(--text-muted)] hover:opacity-75">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+      <p data-i18n="pinDesc" class="text-xs text-[var(--text-muted)]">
+        Enter the 4-digit security PIN to access patient geofencing, remote triggers, and MMSE analytics. (Default: <strong>1234</strong>)
+      </p>
+      
+      <input type="password" id="pinAuthInput" maxlength="6" placeholder="••••" 
+             class="w-full text-center tracking-widest text-2xl font-black py-3 rounded-xl border-2 border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none transition-colors" />
+
+      <div class="flex gap-2">
+        <button onclick="closePinModal()" data-i18n="cancel" class="flex-1 py-3 rounded-xl border border-[var(--border-color)] font-bold text-sm text-[var(--text-main)] active:scale-95 transition-transform">
+          Cancel
+        </button>
+        <button onclick="verifyCaregiverPin()" data-i18n="unlock" class="flex-1 py-3 rounded-xl bg-[var(--primary-purple)] text-white font-bold text-sm active:scale-95 transition-transform shadow">
+          Unlock
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ADD CUSTOM TASK MODAL -->
+  <div id="addTaskModal" class="modal-backdrop hidden">
+    <div class="modal-sheet flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="addTask" class="font-extrabold text-lg text-[var(--text-main)]">Add Routine Task</h3>
+        <button onclick="closeAddTaskModal()" class="text-[var(--text-muted)] hover:opacity-75">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Task Title</label>
+          <input type="text" id="customTaskTitleInput" placeholder="e.g., Water balcony plants" 
+                 class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm font-semibold text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Time</label>
+            <input type="time" id="customTaskTimeInput" value="16:00" 
+                   class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm font-semibold text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Category</label>
+            <select id="customTaskCategorySelect" class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm font-semibold text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+              <option value="routine">Routine</option>
+              <option value="meds">Medication</option>
+              <option value="water">Hydration</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Optional Note / Voice Hint</label>
+          <input type="text" id="customTaskNoteInput" placeholder="e.g., 1 full watering can" 
+                 class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeAddTaskModal()" data-i18n="cancel" class="flex-1 py-3 rounded-xl border border-[var(--border-color)] font-bold text-sm text-[var(--text-main)] active:scale-95 transition-transform">
+          Cancel
+        </button>
+        <button onclick="saveCustomTask()" data-i18n="saveTask" class="flex-1 py-3 rounded-xl bg-[var(--primary-purple)] text-white font-bold text-sm active:scale-95 transition-transform shadow">
+          Save Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ADD HOME EXPLORER ITEM MODAL (With Image Upload Support) -->
+  <div id="addExplorerModal" class="modal-backdrop hidden">
+    <div class="modal-sheet flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <h3 data-i18n="addItem" class="font-extrabold text-lg text-[var(--text-main)]">Add Household Item</h3>
+        <button onclick="closeAddExplorerModal()" class="text-[var(--text-muted)] hover:opacity-75">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <!-- Photo Upload Dropzone -->
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Item Photo</label>
+          <label class="image-upload-dropzone flex flex-col items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-3xl text-[var(--primary-purple)]">photo_camera</span>
+            <span class="text-xs font-bold text-[var(--primary-purple)]">Tap to Upload or Take Photo</span>
+            <span class="text-[10px] text-[var(--text-muted)]">PNG, JPG up to 5MB</span>
+            <input type="file" accept="image/*" class="hidden" onchange="handleImageFileUpload(event)">
+          </label>
+          <div id="uploadedImagePreviewContainer" class="hidden mt-2 relative w-full h-32 rounded-xl overflow-hidden border border-[var(--border-color)]">
+            <img id="uploadedImagePreview" class="w-full h-full object-cover" src="" alt="Preview">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Item Name</label>
+          <input type="text" id="explorerItemTitle" placeholder="e.g., Blood Pressure Monitor" 
+                 class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm font-semibold text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Where is it located?</label>
+          <textarea id="explorerItemLocation" rows="2" placeholder="e.g., In the top drawer of the wooden dresser in the hallway" 
+                    class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Category</label>
+          <select id="explorerItemCategory" class="w-full p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-sm font-semibold text-[var(--text-main)] focus:outline-none focus:border-[var(--primary-purple)]">
+            <option value="meds">Medication & Health</option>
+            <option value="water">Kitchen & Hydration</option>
+            <option value="keys">Keys & Security</option>
+            <option value="personal">Personal Items</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeAddExplorerModal()" data-i18n="cancel" class="flex-1 py-3 rounded-xl border border-[var(--border-color)] font-bold text-sm text-[var(--text-main)] active:scale-95 transition-transform">
+          Cancel
+        </button>
+        <button onclick="saveNewExplorerItem()" data-i18n="saveItem" class="flex-1 py-3 rounded-xl bg-[var(--primary-purple)] text-white font-bold text-sm active:scale-95 transition-transform shadow">
+          Save Item
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. LANGUAGE SELECTION MODAL (14 Languages) -->
+  <div id="languageModal" class="modal-backdrop hidden">
+    <div class="modal-sheet flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[var(--primary-purple)] text-2xl">language</span>
+          <h3 data-i18n="languageDictionary" class="font-extrabold text-lg text-[var(--text-main)]">Select Language</h3>
+        </div>
+        <button onclick="closeLanguageModal()" class="text-[var(--text-muted)] hover:opacity-75">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="selectLanguage('en')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">English</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Default</div>
+        </button>
+        <button onclick="selectLanguage('hi')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">हिंदी (Hindi)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">National</div>
+        </button>
+        <button onclick="selectLanguage('as')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">অসমীয়া (Assamese)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Assam</div>
+        </button>
+        <button onclick="selectLanguage('bn')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">বাংলা (Bengali)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Tripura / WB</div>
+        </button>
+        <button onclick="selectLanguage('bodo')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">बड़ो (Bodo)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Bodoland</div>
+        </button>
+        <button onclick="selectLanguage('garo')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">A·chik (Garo)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Meghalaya</div>
+        </button>
+        <button onclick="selectLanguage('khasi')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">Khasi</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Meghalaya</div>
+        </button>
+        <button onclick="selectLanguage('karbi')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">Karbi</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Karbi Anglong</div>
+        </button>
+        <button onclick="selectLanguage('kokborok')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">Kokborok</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Tripura</div>
+        </button>
+        <button onclick="selectLanguage('meitei')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">মৈতৈলোন্ (Meitei)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Manipur</div>
+        </button>
+        <button onclick="selectLanguage('mishing')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">Mishing</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Assam</div>
+        </button>
+        <button onclick="selectLanguage('mizo')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">Mizo ṭawng</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Mizoram</div>
+        </button>
+        <button onclick="selectLanguage('nepali')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">नेपाली (Nepali)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Sikkim / Hills</div>
+        </button>
+        <button onclick="selectLanguage('sadri')" class="p-3 rounded-xl border border-[var(--border-color)] bg-[var(--surface-bg)] text-left hover:border-[var(--primary-purple)]">
+          <div class="font-bold text-sm text-[var(--text-main)]">सादरी (Sadri)</div>
+          <div class="text-[10px] text-[var(--text-muted)]">Tea Tribe Communities</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SOS EMERGENCY ALERT MODAL -->
+  <div id="sosAlertModal" class="modal-backdrop hidden">
+    <div class="modal-sheet bg-red-950 text-white border-2 border-red-500 flex flex-col gap-4 text-center">
+      <div class="w-16 h-16 rounded-full bg-red-600 mx-auto flex items-center justify-center animate-bounce shadow-lg">
+        <span class="material-symbols-outlined text-4xl text-white">emergency</span>
+      </div>
+      <div>
+        <h3 data-i18n="sosTitle" class="text-2xl font-black">SOS ALERT ACTIVATED</h3>
+        <p data-i18n="sosDesc" class="text-xs text-red-200 mt-1">Caregivers, family members, and medical contacts have been alerted.</p>
+      </div>
+
+      <div class="p-3 rounded-xl bg-black/40 border border-red-800 text-left">
+        <div data-i18n="dispatchedGps" class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Dispatched GPS Location</div>
+        <div id="sosLocationCoords" class="text-sm font-mono font-bold text-white mt-0.5">Lat: 26.1445° N, Lng: 91.7362° E</div>
+        <div class="text-[10px] text-slate-300 mt-1">Address: Greenview Residence, Guwahati Medical Hub Zone</div>
+      </div>
+
+      <div class="flex gap-2">
+        <a href="tel:+919876543210" class="flex-1 py-3 rounded-xl bg-green-600 text-white font-black text-sm flex items-center justify-center gap-1.5 shadow active:scale-95">
+          <span class="material-symbols-outlined text-lg">call</span>
+          <span data-i18n="callCaregiver">Call Caregiver</span>
+        </a>
+        <button onclick="closeSOSAlertModal()" data-i18n="dismiss" class="flex-1 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold text-sm active:scale-95">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. PROFILE CREATION MODAL -->
+  <div id="profileCreationModal" class="modal-backdrop hidden z-[100]">
+    <div class="modal-sheet flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-2">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[var(--primary-purple)] text-2xl font-bold">badge</span>
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Patient Medical Profile</h3>
+        </div>
+        <button onclick="closeProfileCreationModal()" id="closeProfileCreationBtn" class="text-[var(--text-muted)] hover:opacity-75 hidden">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+      
+      <p class="text-xs text-[var(--text-muted)]">
+        Please fill in the patient's basic details and emergency contact configuration below. This helps the system calculate health metrics (like BMI) and manage geofences/SOS notifications.
+      </p>
+
+      <form id="profileForm" onsubmit="saveProfile(event)" class="flex flex-col gap-3">
+        <!-- Profile Picture Selector -->
+        <div class="flex flex-col items-center gap-2 mb-2">
+          <div onclick="document.getElementById('profAvatarInput').click()" class="w-20 h-20 rounded-full border-2 border-dashed border-[var(--primary-purple)] bg-[var(--surface-bg)] flex flex-col items-center justify-center cursor-pointer relative overflow-hidden active:scale-95 transition-transform" title="Tap to upload photo">
+            <img id="profAvatarPreview" class="hidden absolute inset-0 w-full h-full object-cover" alt="Preview" />
+            <span id="profAvatarPlaceholder" class="material-symbols-outlined text-[var(--primary-purple)] text-3xl">add_a_photo</span>
+          </div>
+          <span class="text-[10px] text-[var(--text-muted)] font-bold">Tap to add Patient Photo</span>
+          <input type="file" id="profAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarSelection(event)" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Patient Full Name *</label>
+          <input type="text" id="profName" required placeholder="e.g. John Doe" 
+                 class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Date of Birth *</label>
+            <div class="grid grid-cols-3 gap-1">
+              <select id="profDobDay" required onchange="updateHiddenDob()"
+                      class="px-1.5 py-2 text-xs rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+                <option value="">Day</option>
+              </select>
+              <select id="profDobMonth" required onchange="updateHiddenDob()"
+                      class="px-1.5 py-2 text-xs rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+                <option value="">Month</option>
+                <option value="01">Jan</option>
+                <option value="02">Feb</option>
+                <option value="03">Mar</option>
+                <option value="04">Apr</option>
+                <option value="05">May</option>
+                <option value="06">Jun</option>
+                <option value="07">Jul</option>
+                <option value="08">Aug</option>
+                <option value="09">Sep</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dec</option>
+              </select>
+              <select id="profDobYear" required onchange="updateHiddenDob()"
+                      class="px-1.5 py-2 text-xs rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+                <option value="">Year</option>
+              </select>
+            </div>
+            <input type="hidden" id="profDob" required />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Sex *</label>
+            <select id="profSex" required
+                    class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Height (cm) *</label>
+            <input type="number" id="profHeight" required min="50" max="250" placeholder="e.g. 170" 
+                   class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Weight (kg) *</label>
+            <input type="number" id="profWeight" required min="10" max="200" placeholder="e.g. 70" 
+                   class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Blood Type</label>
+            <select id="profBloodType"
+                    class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Organ Donor?</label>
+            <select id="profDonor"
+                    class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none">
+              <option value="No">No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Home Address *</label>
+          <textarea id="profAddress" required rows="2" placeholder="Primary address for safe-zone center" 
+                    class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none resize-none"></textarea>
+        </div>
+
+        <hr class="border-[var(--border-color)]" />
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">SOS Contact Name *</label>
+            <input type="text" id="profEmergencyName" required placeholder="e.g. Dr. A. Sharma" 
+                   class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">SOS Contact Phone *</label>
+            <input type="tel" id="profEmergencyPhone" required placeholder="e.g. +919876543210" 
+                   class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[var(--text-muted)] mb-1">Medical Remarks (optional)</label>
+          <textarea id="profRemarks" rows="2" placeholder="Allergies, chronic conditions, etc." 
+                    class="w-full px-3.5 py-2 text-sm rounded-lg border border-[var(--border-color)] bg-[var(--surface-bg)] text-[var(--text-main)] focus:border-[var(--primary-purple)] focus:outline-none resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-[var(--primary-purple)] text-white font-black text-sm active:scale-95 transition-transform mt-2">
+          Save Medical Profile
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. PROFILE DETAILS DRAWER (Paytm Style overlay) -->
+  <div id="profileDetailModal" class="modal-backdrop hidden z-[90]">
+    <div class="modal-sheet flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-2">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[var(--primary-purple)] text-2xl font-bold">account_circle</span>
+          <h3 class="font-extrabold text-lg text-[var(--text-main)]">Patient Profile</h3>
+        </div>
+        <button onclick="closeProfileDetailModal()" class="text-[var(--text-muted)] hover:opacity-75">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <!-- Paytm-style Top Card -->
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-[var(--primary-purple-bg)] to-[var(--card-bg)] border border-[var(--primary-purple)] flex items-center gap-3">
+        <div class="w-14 h-14 rounded-full bg-[var(--primary-purple)] text-white flex items-center justify-center font-black text-xl shadow-inner overflow-hidden">
+          <img id="detailAvatarImg" class="hidden w-full h-full object-cover" alt="Avatar" />
+          <span id="detailAvatarInitials">WD</span>
+        </div>
+        <div>
+          <h4 id="detailProfName" class="font-black text-lg text-[var(--text-main)]">WinDemon Patient</h4>
+          <p id="detailProfAgeSex" class="text-xs text-[var(--text-muted)]">Age: -- | Sex: --</p>
+        </div>
+      </div>
+
+      <!-- Health Summary Grid -->
+      <div class="grid grid-cols-3 gap-2">
+        <div class="p-3 rounded-xl bg-[var(--surface-bg)] border border-[var(--border-color)] text-center">
+          <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Height</span>
+          <div id="detailProfHeight" class="text-sm font-bold text-[var(--text-main)] mt-0.5">-- cm</div>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--surface-bg)] border border-[var(--border-color)] text-center">
+          <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Weight</span>
+          <div id="detailProfWeight" class="text-sm font-bold text-[var(--text-main)] mt-0.5">-- kg</div>
+        </div>
+        <div class="p-3 rounded-xl bg-[var(--surface-bg)] border border-[var(--border-color)] text-center">
+          <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">BMI</span>
+          <div id="detailProfBmi" class="text-sm font-bold text-[var(--text-main)] mt-0.5">--</div>
+        </div>
+      </div>
+
+      <!-- Info Sections -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-start gap-2.5 p-1">
+          <span class="material-symbols-outlined text-[var(--text-muted)] text-[20px] mt-0.5">home</span>
+          <div>
+            <div class="text-xs font-bold text-[var(--text-main)]">Home Address</div>
+            <p id="detailProfAddress" class="text-xs text-[var(--text-muted)]">--</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-2.5 p-1">
+          <span class="material-symbols-outlined text-[var(--text-muted)] text-[20px] mt-0.5">water_drop</span>
+          <div>
+            <div class="text-xs font-bold text-[var(--text-main)]">Blood Details</div>
+            <p class="text-xs text-[var(--text-muted)]">Type: <span id="detailProfBloodType" class="font-bold">--</span> | Organ Donor: <span id="detailProfDonor" class="font-bold">--</span></p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-2.5 p-1">
+          <span class="material-symbols-outlined text-[var(--text-muted)] text-[20px] mt-0.5">info</span>
+          <div>
+            <div class="text-xs font-bold text-[var(--text-main)]">Clinical Remarks</div>
+            <p id="detailProfRemarks" class="text-xs text-[var(--text-muted)]">--</p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-[var(--border-color)]" />
+
+      <!-- SOS Contact Card -->
+      <div class="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[12px] fill-icon">sos</span> Emergency SOS Contact</span>
+          <h5 id="detailProfEmergencyName" class="font-bold text-sm text-[var(--text-main)] mt-0.5">--</h5>
+          <p id="detailProfEmergencyPhone" class="text-xs text-[var(--text-muted)]">--</p>
+        </div>
+        <a id="detailProfEmergencyCall" href="tel:" class="w-10 h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow active:scale-90 transition-transform">
+          <span class="material-symbols-outlined text-[20px]">call</span>
+        </a>
+      </div>
+
+      <button onclick="editProfileFromDetail()" class="w-full py-3 rounded-xl bg-[var(--surface-bg)] border border-[var(--border-color)] text-[var(--text-main)] font-bold text-sm active:scale-95 transition-transform">
+        Edit Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Multi-Language Dictionary & Logic Scripts -->
+  <script src="translations.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

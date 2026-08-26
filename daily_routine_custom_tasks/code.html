@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Daily Routine Tracker</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-surface": "#1b1b1b",
+                "primary-fixed-dim": "#aac7ff",
+                "on-primary": "#ffffff",
+                "surface-container": "#eeeeee",
+                "surface-container-highest": "#e2e2e2",
+                "on-tertiary": "#ffffff",
+                "surface-tint": "#3f5f92",
+                "secondary-container": "#fcd400",
+                "surface-container-low": "#f3f3f3",
+                "on-secondary": "#ffffff",
+                "outline-variant": "#c4c6d0",
+                "on-tertiary-container": "#ff5a53",
+                "primary-container": "#002b5c",
+                "on-tertiary-fixed": "#410003",
+                "background": "#f9f9f9",
+                "inverse-on-surface": "#f1f1f1",
+                "tertiary": "#390002",
+                "secondary": "#705d00",
+                "outline": "#747780",
+                "on-primary-fixed": "#001b3e",
+                "on-surface-variant": "#43474f",
+                "primary-fixed": "#d6e3ff",
+                "secondary-fixed": "#ffe16d",
+                "on-error": "#ffffff",
+                "on-primary-fixed-variant": "#264779",
+                "on-primary-container": "#7594cb",
+                "primary": "#001736",
+                "on-secondary-fixed": "#221b00",
+                "error-container": "#ffdad6",
+                "on-error-container": "#93000a",
+                "on-tertiary-fixed-variant": "#930010",
+                "on-background": "#1b1b1b",
+                "inverse-surface": "#303030",
+                "surface-bright": "#f9f9f9",
+                "surface-variant": "#e2e2e2",
+                "on-secondary-fixed-variant": "#544600",
+                "inverse-primary": "#aac7ff",
+                "tertiary-fixed-dim": "#ffb3ac",
+                "tertiary-container": "#600007",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-fixed": "#ffdad6",
+                "error": "#ba1a1a",
+                "secondary-fixed-dim": "#e9c400",
+                "surface-dim": "#dadada",
+                "surface-container-high": "#e8e8e8",
+                "on-secondary-container": "#6e5c00",
+                "surface": "#f9f9f9"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-gap": "24px",
+                "gutter": "16px",
+                "touch-target-min": "48px",
+                "margin-page": "20px",
+                "grid-gap": "16px"
+        },
+        "fontFamily": {
+                "headline-lg": [
+                        "Inter"
+                ],
+                "button-text": [
+                        "Inter"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "label-xl": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "headline-lg": [
+                        "34px",
+                        {
+                                "lineHeight": "42px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "button-text": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "30px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "34px",
+                                "fontWeight": "800"
+                        }
+                ],
+                "label-xl": [
+                        "20px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "18px",
+                        {
+                                "lineHeight": "26px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface dark:bg-surface-dim text-on-surface w-full h-full pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-page h-[64px] bg-surface dark:bg-surface-dim border-b-2 border-outline-variant dark:border-outline">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-100 p-2 rounded-full min-h-touch-target-min min-w-touch-target-min flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-primary dark:text-primary-fixed-dim">WinDemon</h1>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-100 p-2 rounded-full min-h-touch-target-min min-w-touch-target-min flex items-center justify-center font-bold">
+            5 🔥
+        </button>
+</header>
+<main class="pt-[88px] px-margin-page max-w-4xl mx-auto space-y-stack-gap">
+<!-- Streak Card -->
+<div class="bg-secondary-container dark:bg-secondary rounded-xl p-6 flex items-center gap-4 shadow-sm border-2 border-transparent">
+<div class="bg-surface p-3 rounded-full text-secondary-container">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<h2 class="font-label-xl text-label-xl text-on-secondary-container dark:text-on-secondary">5 Day Consecutive Streak</h2>
+<p class="font-body-md text-body-md text-on-secondary-container dark:text-on-secondary opacity-90">Keep it up! You're doing great.</p>
+</div>
+</div>
+<!-- Sophisticated Progress Visualization -->
+<div class="flex items-center gap-6 bg-surface-container dark:bg-surface-variant p-6 rounded-2xl shadow-sm border border-outline-variant dark:border-outline">
+<!-- Circular Progress -->
+<div class="relative w-24 h-24 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-highest dark:text-outline-variant" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary dark:text-primary-fixed" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="50.24" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-md text-primary dark:text-primary-fixed-dim">80%</span>
+</div>
+</div>
+<div>
+<h2 class="font-headline-md text-on-surface dark:text-on-surface">Today's Progress</h2>
+<p class="font-body-md text-on-surface-variant dark:text-inverse-on-surface mt-1">4 of 5 tasks completed</p>
+</div>
+</div>
+<!-- Task List -->
+<div class="flex flex-col gap-4">
+<!-- Completed Task 1 -->
+<div class="relative flex items-center bg-surface-container-low dark:bg-surface-variant p-4 rounded-xl border-2 border-primary overflow-hidden">
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="flex items-center gap-3 flex-1 relative z-10 opacity-70">
+<button aria-label="Read task aloud" class="text-primary dark:text-primary-fixed p-2 rounded-full flex items-center justify-center min-w-[48px] min-h-[48px] hover:bg-surface-container-highest active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">volume_up</span>
+</button>
+<span class="font-button-text text-button-text flex-1 line-through">Morning Walk</span>
+</div>
+<div class="relative z-10 w-14 h-14 bg-primary dark:bg-primary-fixed rounded-full flex items-center justify-center shadow-sm text-on-primary dark:text-on-primary-fixed">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<!-- Completed Task 2 -->
+<div class="relative flex items-center bg-surface-container-low dark:bg-surface-variant p-4 rounded-xl border-2 border-primary overflow-hidden">
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="flex items-center gap-3 flex-1 relative z-10 opacity-70">
+<button aria-label="Read task aloud" class="text-primary dark:text-primary-fixed p-2 rounded-full flex items-center justify-center min-w-[48px] min-h-[48px] hover:bg-surface-container-highest active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">volume_up</span>
+</button>
+<span class="font-button-text text-button-text flex-1 line-through">Take Pills</span>
+</div>
+<div class="relative z-10 w-14 h-14 bg-primary dark:bg-primary-fixed rounded-full flex items-center justify-center shadow-sm text-on-primary dark:text-on-primary-fixed">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<!-- Completed Task 3 -->
+<div class="relative flex items-center bg-surface-container-low dark:bg-surface-variant p-4 rounded-xl border-2 border-primary overflow-hidden">
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="flex items-center gap-3 flex-1 relative z-10 opacity-70">
+<button aria-label="Read task aloud" class="text-primary dark:text-primary-fixed p-2 rounded-full flex items-center justify-center min-w-[48px] min-h-[48px] hover:bg-surface-container-highest active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">volume_up</span>
+</button>
+<span class="font-button-text text-button-text flex-1 line-through">Water</span>
+</div>
+<div class="relative z-10 w-14 h-14 bg-primary dark:bg-primary-fixed rounded-full flex items-center justify-center shadow-sm text-on-primary dark:text-on-primary-fixed">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<!-- Completed Task 4 -->
+<div class="relative flex items-center bg-surface-container-low dark:bg-surface-variant p-4 rounded-xl border-2 border-primary overflow-hidden">
+<div class="absolute inset-0 bg-primary/10"></div>
+<div class="flex items-center gap-3 flex-1 relative z-10 opacity-70">
+<button aria-label="Read task aloud" class="text-primary dark:text-primary-fixed p-2 rounded-full flex items-center justify-center min-w-[48px] min-h-[48px] hover:bg-surface-container-highest active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-2xl">volume_up</span>
+</button>
+<span class="font-button-text text-button-text flex-1 line-through">Lunch</span>
+</div>
+<div class="relative z-10 w-14 h-14 bg-primary dark:bg-primary-fixed rounded-full flex items-center justify-center shadow-sm text-on-primary dark:text-on-primary-fixed">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<!-- Incomplete Task (Swipe/Tap to verify) -->
+<div class="relative flex items-center bg-surface-container-lowest dark:bg-surface p-4 rounded-xl border-2 border-outline-variant dark:border-outline overflow-hidden group hover:border-primary transition-colors">
+<div class="absolute inset-0 bg-primary/5 flex items-center px-4 w-0 group-hover:w-full transition-all duration-300"></div>
+<div class="flex items-center gap-3 flex-1 relative z-10">
+<button aria-label="Read task aloud" class="text-on-surface-variant dark:text-outline hover:text-primary dark:hover:text-primary-fixed p-2 rounded-full flex items-center justify-center min-w-[48px] min-h-[48px] transition-colors">
+<span class="material-symbols-outlined text-2xl">volume_up</span>
+</button>
+<span class="font-button-text text-button-text flex-1">Posture</span>
+</div>
+<div class="relative z-10 w-14 h-14 bg-surface-container-high dark:bg-surface-variant rounded-full flex items-center justify-center shadow-sm cursor-pointer active:scale-95 border-2 border-outline-variant dark:border-outline text-on-surface-variant dark:text-outline hover:bg-surface-container-highest transition-all group-hover:border-primary group-hover:text-primary">
+<span class="material-symbols-outlined text-3xl">swipe_right</span>
+</div>
+</div>
+</div>
+<!-- Add Custom Task -->
+<div class="mt-8 flex items-center gap-3">
+<input class="flex-1 bg-surface-container-lowest dark:bg-surface-variant border-2 border-outline-variant dark:border-outline rounded-xl px-5 min-h-[64px] font-body-lg text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors" placeholder="Add Custom Task..." type="text"/>
+<button class="bg-primary text-on-primary dark:bg-primary-fixed dark:text-on-primary-fixed rounded-xl min-w-[64px] min-h-[64px] flex items-center justify-center shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<!-- Action Button -->
+<div class="pt-8 pb-4">
+<button class="w-full bg-primary text-on-primary dark:bg-primary-fixed dark:text-on-primary-fixed font-button-text text-button-text min-h-[64px] rounded-xl flex items-center justify-center gap-3 hover:opacity-90 active:scale-[0.98] transition-all border-2 border-transparent focus:border-secondary-container shadow-md">
+<span>Go to End-of-Day Recall</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface dark:bg-surface-dim border-t-2 border-outline-variant dark:border-outline md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 rounded-xl min-h-touch-target-min min-w-touch-target-min">
+<span class="material-symbols-outlined text-2xl mb-1">home</span>
+<span class="font-label-xl text-sm">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-xl px-6 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 min-h-touch-target-min min-w-touch-target-min">
+<span class="material-symbols-outlined text-2xl mb-1" style="font-variation-settings: 'FILL' 1;">checklist</span>
+<span class="font-label-xl text-sm font-bold">Tasks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 rounded-xl min-h-touch-target-min min-w-touch-target-min">
+<span class="material-symbols-outlined text-2xl mb-1">volunteer_activism</span>
+<span class="font-label-xl text-sm">Care</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 rounded-xl min-h-touch-target-min min-w-touch-target-min">
+<span class="material-symbols-outlined text-2xl mb-1">settings</span>
+<span class="font-label-xl text-sm">Settings</span>
+</button>
+</nav>
+</body></html>

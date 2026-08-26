@@ -1,0 +1,395 @@
+/* WinDemon Dementia Care Platform - Stylesheet */
+:root {
+  --primary-purple: #470085;
+  --primary-purple-light: #5f259f;
+  --primary-purple-bg: #eedbff;
+  --secondary-teal: #00796b;
+  --secondary-teal-bg: #e0f2f1;
+  --warning-amber: #e65100;
+  --warning-amber-bg: #fff3e0;
+  --danger-red: #b71c1c;
+  --danger-red-bg: #ffebee;
+  --success-green: #1b5e20;
+  --success-green-bg: #e8f5e9;
+  --surface-bg: #f5f6fa;
+  --card-bg: #ffffff;
+  --text-main: #1c1b1f;
+  --text-muted: #49454f;
+  --border-color: #e2e4ea;
+  --font-scale: 1;
+}
+
+html.dark {
+  --primary-purple: #9d50ff;
+  --primary-purple-light: #7b2cbf;
+  --primary-purple-bg: #2a1040;
+  --secondary-teal: #26a69a;
+  --secondary-teal-bg: #00332c;
+  --warning-amber: #ff9800;
+  --warning-amber-bg: #3d2200;
+  --danger-red: #ef5350;
+  --danger-red-bg: #400a0a;
+  --success-green: #4caf50;
+  --success-green-bg: #0d2e14;
+  --surface-bg: #101014;
+  --card-bg: #1a1a24;
+  --text-main: #f4eff5;
+  --text-muted: #cac4d0;
+  --border-color: #2c2c3e;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--surface-bg);
+  color: var(--text-main);
+  font-size: calc(16px * var(--font-scale));
+  line-height: 1.5;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Accessible Font Scales */
+.font-scale-sm { --font-scale: 0.92; }
+.font-scale-md { --font-scale: 1; }
+.font-scale-lg { --font-scale: 1.15; }
+.font-scale-xl { --font-scale: 1.3; }
+
+/* PhonePe-Inspired App Shell */
+.app-viewport {
+  max-width: 480px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--surface-bg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Material Symbols Config */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.material-symbols-outlined.fill-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Top PhonePe-Style Header */
+.top-header {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-light) 100%);
+  color: #ffffff;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+/* Card Styling */
+.pp-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.pp-card:active {
+  transform: scale(0.99);
+}
+
+/* Quick Action Grid Tiles */
+.quick-action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-action-tile:active {
+  transform: scale(0.96);
+  background: var(--primary-purple-bg);
+}
+
+.tile-icon-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* Patient Task Done State - Clean Positive Feedback (NO STRIKETHROUGH) */
+.task-item {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-item.is-completed {
+  background: var(--success-green-bg);
+  border-color: var(--success-green);
+}
+
+.task-item.is-completed .task-title {
+  color: var(--success-green);
+  font-weight: 600;
+  text-decoration: none; /* strictly no strikethrough */
+}
+
+.task-checkbox-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.task-item.is-completed .task-checkbox-btn {
+  background: var(--success-green);
+  border-color: var(--success-green);
+  color: #ffffff;
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 4px 10px;
+  z-index: 40;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.nav-item.active {
+  color: var(--primary-purple);
+}
+
+.nav-item.active .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Safe Zone Radar Simulation */
+.radar-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: #e3ebf6;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+html.dark .radar-canvas-container {
+  background: #141b28;
+}
+
+.radar-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(71, 0, 133, 0.12);
+  border: 2px solid rgba(71, 0, 133, 0.4);
+  pointer-events: none;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.radar-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: var(--primary-purple);
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.patient-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #00c853;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 200, 83, 0.6);
+  z-index: 12;
+  transition: top 1s ease-in-out, left 1s ease-in-out;
+}
+
+.patient-dot.breached {
+  background: var(--danger-red);
+  box-shadow: 0 0 12px rgba(239, 83, 80, 0.8);
+  animation: breach-blink 0.8s infinite;
+}
+
+@keyframes breach-blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+/* Cognitive Game Grid */
+.simon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.simon-btn {
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.simon-btn:active, .simon-btn.lit {
+  transform: scale(0.94);
+  filter: brightness(1.4) saturate(1.2);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.simon-btn-1 { background: #1565c0; color: #ffffff; }
+.simon-btn-2 { background: #2e7d32; color: #ffffff; }
+.simon-btn-3 { background: #c62828; color: #ffffff; }
+.simon-btn-4 { background: #ef6c00; color: #ffffff; }
+
+/* Image Upload Preview Box */
+.image-upload-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: 14px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--surface-bg);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.image-upload-dropzone:hover {
+  border-color: var(--primary-purple);
+  background: var(--primary-purple-bg);
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-sheet {
+  background: var(--card-bg);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  animation: modal-slide-up 0.25s ease-out;
+}
+
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 110;
+  width: 90%;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast {
+  background: #1c1b1f;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  animation: toast-fade 0.25s ease-out;
+}
+
+html.dark .toast {
+  background: #f4eff5;
+  color: #1c1b1f;
+}
+
+@keyframes toast-fade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Caregiver Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f9f9f9",
+                    "primary-container": "#002b5c",
+                    "primary-fixed-dim": "#aac7ff",
+                    "on-surface": "#1b1b1b",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#ffe16d",
+                    "outline": "#747780",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-tertiary-fixed": "#410003",
+                    "on-surface-variant": "#43474f",
+                    "primary-fixed": "#d6e3ff",
+                    "surface-variant": "#e2e2e2",
+                    "surface-container-high": "#e8e8e8",
+                    "tertiary-container": "#600007",
+                    "surface": "#f9f9f9",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#aac7ff",
+                    "on-primary-fixed": "#001b3e",
+                    "surface-dim": "#dadada",
+                    "on-secondary-fixed": "#221b00",
+                    "inverse-on-surface": "#f1f1f1",
+                    "secondary": "#705d00",
+                    "on-primary-container": "#7594cb",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#930010",
+                    "on-background": "#1b1b1b",
+                    "on-secondary-fixed-variant": "#544600",
+                    "tertiary": "#390002",
+                    "tertiary-fixed": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f3f3f3",
+                    "on-primary-fixed-variant": "#264779",
+                    "surface-tint": "#3f5f92",
+                    "outline-variant": "#c4c6d0",
+                    "on-secondary-container": "#6e5c00",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-container": "#ff5a53",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "background": "#f9f9f9",
+                    "primary": "#001736",
+                    "secondary-container": "#fcd400",
+                    "inverse-surface": "#303030",
+                    "surface-container": "#eeeeee",
+                    "secondary-fixed-dim": "#e9c400",
+                    "tertiary-fixed-dim": "#ffb3ac"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "touch-target-min": "48px",
+                    "margin-page": "20px",
+                    "grid-gap": "16px",
+                    "gutter": "16px",
+                    "stack-gap": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "label-xl": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "button-text": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["34px", {"lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-xl": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "800"}],
+                    "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "700"}],
+                    "button-text": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "28px", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base styles for material symbols */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom animation for the sync indicator */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(0, 43, 92, 0.4); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 43, 92, 0); }
+            100% { transform: scale(0.8); box-shadow: 0 0 0 0 rgba(0, 43, 92, 0); }
+        }
+        .sync-pulse {
+            animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar Component (from JSON) -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-margin-page h-[64px] bg-surface dark:bg-surface-dim border-b-2 border-outline-variant dark:border-outline flat no shadows">
+<div class="flex items-center gap-4">
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-100 p-2 rounded-full flex items-center justify-center min-h-touch-target-min min-w-touch-target-min">
+<span class="material-symbols-outlined" style="font-size: 28px;">menu</span>
+</button>
+<span class="font-headline-md text-headline-md-mobile text-primary dark:text-primary-fixed-dim">WinDemon</span>
+</div>
+<div>
+<button class="text-primary dark:text-primary-fixed-dim hover:bg-surface-container-high dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-100 font-label-xl text-label-xl px-4 py-2 rounded-lg flex items-center justify-center min-h-touch-target-min">
+                5 🔥
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<!-- Added top and bottom margins to account for fixed navbars -->
+<main class="flex-grow pt-[84px] pb-[100px] px-margin-page flex flex-col gap-stack-gap max-w-3xl mx-auto w-full">
+<!-- Caregiver Sync Indicator -->
+<div class="bg-primary-fixed border-2 border-primary-fixed-dim rounded-xl p-4 flex items-center gap-4 shadow-sm w-full">
+<div class="w-4 h-4 rounded-full bg-primary-container sync-pulse flex-shrink-0"></div>
+<div class="flex-grow">
+<h2 class="font-label-xl text-label-xl text-on-primary-fixed">Caregiver Sync Active</h2>
+<p class="font-body-md text-body-md text-on-primary-fixed-variant">Receiving live updates.</p>
+</div>
+<span class="material-symbols-outlined text-primary-container" data-weight="fill" style="font-size: 32px;">sync</span>
+</div>
+<!-- Metrics Grid (2x2 Fixed Grid approach) -->
+<div class="grid grid-cols-2 gap-grid-gap">
+<!-- Metric 1: Patient Progress -->
+<div class="bg-surface border-2 border-outline-variant rounded-xl p-6 flex flex-col items-center justify-center gap-4 col-span-2 md:col-span-1 shadow-sm">
+<span class="material-symbols-outlined text-primary-container" style="font-size: 40px; font-variation-settings: 'FILL' 1;">monitor_heart</span>
+<h3 class="font-label-xl text-label-xl text-on-surface-variant text-center">Patient Progress</h3>
+<!-- Large, accessible progress indicator -->
+<div class="w-full flex flex-col items-center gap-2">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">85%</span>
+<div class="w-full bg-surface-variant h-6 rounded-full overflow-hidden border border-outline-variant">
+<div class="bg-primary-container h-full rounded-full transition-all duration-1000 ease-out" style="width: 85%;"></div>
+</div>
+</div>
+</div>
+<!-- Metric 2: Current Streak -->
+<div class="bg-surface border-2 border-outline-variant rounded-xl p-6 flex flex-col items-center justify-center gap-4 col-span-2 md:col-span-1 shadow-sm">
+<span class="material-symbols-outlined text-secondary-container" style="font-size: 40px; font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<h3 class="font-label-xl text-label-xl text-on-surface-variant text-center">Current Streak</h3>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">5</span>
+<span class="font-label-xl text-label-xl text-on-surface-variant">Days</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity List -->
+<section class="flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface px-2">Recent Activity</h3>
+<!-- Task 1 -->
+<div class="bg-surface border-2 border-outline-variant rounded-xl p-4 flex items-center gap-4 min-h-[80px]">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-xl text-label-xl text-on-surface">Morning Medication</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Completed at 8:30 AM</p>
+</div>
+</div>
+<!-- Task 2 -->
+<div class="bg-surface border-2 border-outline-variant rounded-xl p-4 flex items-center gap-4 min-h-[80px]">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-xl text-label-xl text-on-surface">Blood Pressure Check</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Completed at 9:00 AM</p>
+</div>
+</div>
+<!-- Task 3 -->
+<div class="bg-surface border-2 border-outline-variant rounded-xl p-4 flex items-center gap-4 min-h-[80px]">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-xl text-label-xl text-on-surface">Breakfast Logged</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Completed at 9:15 AM</p>
+</div>
+</div>
+</section>
+<!-- Critical Action Button -->
+<section class="mt-4 pb-4">
+<button class="w-full min-h-[72px] bg-tertiary-container text-on-tertiary rounded-xl font-button-text text-button-text flex justify-center items-center gap-3 active:scale-95 transition-transform shadow-md border-2 border-tertiary hover:bg-tertiary">
+<span class="material-symbols-outlined" style="font-size: 32px; font-variation-settings: 'FILL' 1;">notifications_active</span>
+                Trigger Remote Alert
+            </button>
+</section>
+</main>
+<!-- BottomNavBar Component (from JSON) -->
+<!-- Active state mapped to "Home" for the main dashboard view -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-surface dark:bg-surface-dim border-t-2 border-outline-variant dark:border-outline flat no shadows md:hidden">
+<!-- Tab 1: Home (ACTIVE) -->
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-xl px-6 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 min-h-touch-target-min">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-xl text-label-xl">Home</span>
+</button>
+<!-- Tab 2: Tasks (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 min-h-touch-target-min">
+<span class="material-symbols-outlined mb-1">checklist</span>
+<span class="font-label-xl text-label-xl">Tasks</span>
+</button>
+<!-- Tab 3: Care (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 min-h-touch-target-min">
+<span class="material-symbols-outlined mb-1">volunteer_activism</span>
+<span class="font-label-xl text-label-xl">Care</span>
+</button>
+<!-- Tab 4: Settings (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline px-4 py-2 hover:bg-surface-container dark:hover:bg-surface-container-high active:translate-y-1 transition-all duration-200 min-h-touch-target-min">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-xl text-label-xl">Settings</span>
+</button>
+</nav>
+</body></html>
