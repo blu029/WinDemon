@@ -4,3 +4,7 @@
 /app/build/intermediates/javac/debug/classes/
 /app/build/intermediates/javac/debugAndroidTest/classes/
 /build/
+.idea/
+local.properties
+*.iml
+.DS_Store
